@@ -1,12 +1,12 @@
-# Webtools AI Development Team — Onboarding & Operating Standard
+# AI Development Team — Onboarding & Operating Standard
 
 **Version:** 1.0 (initial working standard)  
-**Scope:** All current and future Webtools projects  
+**Scope:** Projects of any organization, domain, or scale  
 **Applies to:** Human contributors, AI assistants, coding agents, reviewers, and project coordinators
 
 ## 1. Purpose and scope
 
-This document defines how the Webtools development team plans, delegates, implements, reviews, and delivers software with human and AI contributors.
+This document defines how the AI Development Team plans, delegates, implements, reviews, and delivers software with human and AI contributors.
 
 It is an organization-wide standard, not a Kanban-specific guide. It applies regardless of repository, programming language, hosting provider, project-management system, AI model, coding environment, or MCP integration. Tools may change; the responsibilities, lifecycle, quality gates, and principles remain applicable.
 
@@ -331,7 +331,7 @@ These concepts are tool-independent. The last column gives common Kanban equival
 
 ## 8. Current Kanban implementation convention
 
-Webtools Kanban is the initial work-tracking integration, not the definition of this standard.
+Webtools Kanban is an initial example of a work-tracking integration, not the definition or boundary of this standard. Other projects may use different trackers and integrations.
 
 Current limitations:
 - Board membership provides access roles; it is not per-card assignment.
@@ -504,7 +504,7 @@ Project-specific documentation should explain what is unique about that project 
 
 ## 17. Maintenance and authority
 
-This document is the common operating standard for Webtools AI-assisted development. Project-specific guides may add stricter requirements or local implementation details. Conflicts must be raised and resolved, not silently overridden.
+This document is the common operating standard for AI-assisted software development across projects. Project-specific guides may add stricter requirements or local implementation details. Conflicts must be raised and resolved, not silently overridden.
 
 Changes to roles, decision rights, required quality gates, or security rules require Team Lead review.
 
