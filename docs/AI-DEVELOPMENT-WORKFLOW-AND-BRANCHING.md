@@ -1,7 +1,7 @@
 # AI Development Workflow and Branching
 
 **Status:** Working procedure  
-**Scope:** Current and future Webtools projects  
+**Scope:** Projects of any organization, domain, or scale  
 **Parent standard:** [AI Development Team Onboarding](AI-DEVELOPMENT-TEAM-ONBOARDING.md)
 
 This guide translates the organization-wide standard into a practical workflow for the current team. It describes the intended responsibilities while allowing each handoff to adapt to the actual repository, Kanban MCP, and deployment access available to the participating agent.
