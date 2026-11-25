@@ -509,3 +509,32 @@ This document is the common operating standard for AI-assisted software developm
 Changes to roles, decision rights, required quality gates, or security rules require Team Lead review.
 
 **The objective is dependable software delivery through clear ownership, coordinated execution, independent verification, transparent evidence, and human accountability—not simply maximizing the number of agents involved.**
+
+## 13. Context loading and documentation ownership
+
+The AI Development Team repository is a shared standards reference, not a mandatory context dependency for every task. AI participants should load the minimum context necessary to perform their assigned work.
+
+### Context loading rules
+
+1. Start with the individual project's own AI instructions and documentation.
+2. Load only the project architecture, code, requirements, and operational material relevant to the assigned task.
+3. Consult this repository only when a shared team rule is needed, such as role assignment, ownership, independent QA, workflow states, branching, handoffs, or governance.
+4. Read only the relevant central guide or template. Do not load the entire repository by default.
+5. Do not fetch this repository for ordinary project implementation, bug fixes, or project-specific reviews unless a shared team standard is actually relevant.
+6. A link to this repository in a project's `README.md`, `CLAUDE.md`, `AGENTS.md`, or other instructions is a reference, not an instruction to retrieve it on every session or task.
+
+### Documentation ownership
+
+| Information | Authoritative location |
+|---|---|
+| Shared team roles, responsibilities, governance, and quality gates | This AI Development Team repository |
+| Shared lifecycle, workflow states, branching, and handoff standards | This AI Development Team repository |
+| Reusable requirements and task templates | This AI Development Team repository |
+| Project architecture, design decisions, coding conventions, setup, and deployment details | Individual project repository |
+| Feature-specific requirements and acceptance criteria | The approved feature requirements document in the relevant project or its designated planning location |
+| Implementation history and code changes | Project Git history and pull requests |
+| Current task status, discussion, and handoffs | Project work tracker |
+
+Do not duplicate project-specific technical documentation in this repository. Do not copy the complete central standards into every project repository. Projects may adopt or adapt the shared standards, but must document any project-specific variation in their own instructions.
+
+**Operating principle: project context by default; team context only when needed.**
