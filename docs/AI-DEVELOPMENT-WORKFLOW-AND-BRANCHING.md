@@ -375,3 +375,30 @@ The coordinator keeps the card current when it has access. When it does not, the
 - Do not promote unaccepted work merely because it is present in `develop`.
 - No agent reports a Git, Kanban, or Render action as complete without confirmation from the relevant system.
 - Record decisions and evidence in shared artifacts so the process does not depend on private chat history.
+
+## 13. Context loading and documentation boundaries
+
+The AI Development Team repository is not a required context dependency for every development task. Each participant should begin with the individual project's own instructions and load only the context needed for the assigned work.
+
+### For developers and reviewers
+
+- Read the project's own `README`, `CLAUDE.md`, `AGENTS.md`, architecture notes, and relevant code as applicable to the task and the tools being used.
+- Read the approved feature requirements and the specific card being worked on.
+- Do not load the entire AI Development Team repository for ordinary implementation, bug fixes, or project-specific code reviews.
+- Consult only the relevant central guide when a shared team rule is needed—for example, role boundaries, independent QA, workflow transitions, branching, or handoff requirements.
+- Use the central requirements template only when creating a new requirements artifact.
+
+### Sources of truth
+
+| Concern | Source of truth |
+|---|---|
+| Project architecture, coding conventions, build/run instructions, environments, and technical decisions | Individual project repository |
+| Feature behavior, scope, and acceptance criteria | Approved feature requirements document |
+| Shared team roles, governance, quality gates, and collaboration principles | AI Development Team onboarding standard |
+| Shared workflow states, handoff rules, and branching conventions | AI Development Team workflow standard, as adopted by the project |
+| Task status, discussion, assignments, and handoff activity | Project work tracker |
+| Actual code and review history | Project repository, commits, and pull requests |
+
+A project's own instructions may link to the central standards repository, but that link does not mean every agent must retrieve those documents on every task. Project-specific instructions remain authoritative for project-specific technical matters. If a project intentionally adopts a different workflow or branching policy, record that variation in the project repository and follow the approved project policy.
+
+**Operating principle: project context by default; team context only when needed.**
