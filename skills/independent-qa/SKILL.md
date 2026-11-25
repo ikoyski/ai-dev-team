@@ -18,7 +18,7 @@ Use when assigned as QA for work implemented by another contributor. The QA revi
 - Original task and approved requirements.
 - Exact PR, branch, commit, or build under review.
 - Developer handoff and known test evidence.
-- Relevant project instructions and a safe environment for any execution.
+- Relevant project instructions and a safe environment for any execution. Any execution of untrusted code, build scripts, or tests must occur in an isolated or otherwise approved non-production environment with no production credentials or privileged production access. If that cannot be assured, perform static verification only and report runtime checks as not performed.
 - Read-only access is the default; obtain explicit authorization before any action that changes shared state.
 
 ## Procedure
@@ -40,7 +40,7 @@ A QA report containing:
 - Result: PASS / FAIL / NEEDS CLARIFICATION.
 - Task, repository, and exact revision.
 - Acceptance criteria and verification outcomes.
-- Findings with severity, precise location, evidence, and recommended correction.
+- Findings using the shared severity scale in the [Onboarding Standard §11](../../docs/AI-DEVELOPMENT-TEAM-ONBOARDING.md#11-qa-severity-and-outcomes), with precise location, evidence, and recommended correction.
 - Tests/checks executed and actual results.
 - Unverified areas and limitations.
 - Next requested action.
