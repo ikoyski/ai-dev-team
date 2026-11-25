@@ -122,7 +122,7 @@ Default cross-QA:
 - Claude Code using OpenRouter (Dev 2) implementation → Antigravity (QA 2).
 - ChatGPT implementation → assign Antigravity or Claude Code using OpenRouter as independent QA.
 
-These are default assignments, not assumptions about tool access. Use the workflow in [AI Development Workflow and Branching](WORKFLOW-AND-BRANCHING.md) to determine the actual handoff based on each participant's available repository, Kanban, and deployment capabilities.
+These are default assignments, not assumptions about tool access. Use the workflow in [AI Development Workflow and Branching](AI-DEVELOPMENT-WORKFLOW-AND-BRANCHING.md) to determine the actual handoff based on each participant's available repository, Kanban, and deployment capabilities.
 
 Verify access before assigning work. Never assume one environment inherits another environment's tools or permissions. Record the actual OpenRouter model when relevant.
 
@@ -216,9 +216,15 @@ Assess architecture, security, maintainability, integration, and unresolved find
 ### Stage 8 — Human approval, integration, and completion
 **Lead: Human Team Lead or authorized human approver**
 
-Confirm reviews and CI checks; review outstanding risks; approve or reject merge; merge using project policy; verify the integrated result; authorize deployment separately; update task and project records.
+Treat test integration and production promotion as separate approval points:
 
-**Output:** merged and verified work, or documented decision not to proceed.
+1. After independent QA and senior technical review pass, the Team Lead explicitly authorizes the feature PR to merge into `develop`. This is a non-production integration step used to assemble and verify the test build; it is still a merge and is not authorized by an AI reviewer's PASS alone.
+2. Deploy the resulting `develop` commit to the test environment through the authorized process. Verify and record the deployed commit and deployment result.
+3. The Team Lead performs acceptance testing against the approved requirements and records ACCEPTED or REJECTED.
+4. Only after acceptance, the Team Lead separately authorizes the specific production promotion to `master`. The authorized operator follows the project's release process, verifies the production result, and records the released commit.
+5. Update task and project records. Do not mark the work Done until the required merge, verification, and deployment steps for that project are complete.
+
+**Output:** test-integrated and accepted work with explicit production authorization, or a documented decision not to proceed.
 
 ## 5. Work-item contract
 
@@ -272,9 +278,9 @@ A project tool may use different names, but must preserve these meanings and qua
 | Backlog | Proposed or known work not committed for execution | Idea or request recorded | Clarify, prioritize, defer, or reject |
 | Ready | Approved, specified work awaiting capacity | Scope, criteria, dependencies, owner, reviewer clear | Developer accepts |
 | In Progress | Active implementation or investigation | Owner accepted and started | Implement and prepare handoff |
-| In Review | Submitted for independent QA | Reviewable change and implementation report available | QA evaluates |
+| In Review | Submitted for independent QA, senior review, and test integration/acceptance | Reviewable change and implementation report available | QA and senior review; Team Lead authorizes merge to `develop`; test deployment and human acceptance |
 | Revision | Changes or clarification required | Actionable findings recorded | Original developer responds |
-| Ready to Merge | Required reviews and checks passed | No unresolved blocking findings | Human approver decides |
+| Ready to Merge | Test deployment accepted and work is eligible for production promotion | Independent QA and senior review passed; Team Lead accepted the test deployment | Team Lead explicitly authorizes the specific production promotion |
 | Done | Merged and verified according to project policy | Human approval, integration, required verification complete | Close or archive as appropriate |
 | Blocked | Work cannot safely or meaningfully proceed | Dependency, access, decision, environment, or external issue prevents progress | Resolve blocker and resume |
 
@@ -285,8 +291,8 @@ A project tool may use different names, but must preserve these meanings and qua
 - In Progress → In Review: PR/change reference and evidence are supplied.
 - In Review → Revision: blocking defects or unmet criteria are found.
 - Revision → In Review: fixes are ready for re-evaluation.
-- In Review → Ready to Merge: QA and required technical reviews pass.
-- Ready to Merge → Done: authorized human approval, merge, and verification complete.
+- In Review → Ready to Merge: independent QA and required senior technical review pass; the Team Lead explicitly authorizes the feature PR merge into `develop`; the test deployment is verified; and the Team Lead accepts the tested result.
+- Ready to Merge → Done: the Team Lead explicitly authorizes the specific production promotion; the authorized release process completes; and required production verification is recorded.
 - Any active state → Blocked: work cannot proceed; record reason, impact, and needed action.
 - Blocked → appropriate prior state: blocker is resolved.
 
@@ -357,7 +363,7 @@ Suggested type labels:
 
 Add a project/repository label when a shared board contains multiple projects. Preserve existing labels when an API replaces the full label list.
 
-Default columns: Backlog → Ready → In Progress → In Review → Revision → Ready to Merge → Done, with Blocked available from active stages. Preserve these standard states; use comments and handoff conventions to distinguish implementation QA, senior review, test deployment, and human acceptance rather than adding extra mandatory columns. See [AI Development Workflow and Branching](WORKFLOW-AND-BRANCHING.md).
+Default columns: Backlog → Ready → In Progress → In Review → Revision → Ready to Merge → Done, with Blocked available from active stages. Preserve these standard states; use comments and handoff conventions to distinguish implementation QA, senior review, test deployment, and human acceptance rather than adding extra mandatory columns. See [AI Development Workflow and Branching](AI-DEVELOPMENT-WORKFLOW-AND-BRANCHING.md).
 
 ## 9. Communication and shared context
 
@@ -455,8 +461,10 @@ A task is Done only when all applicable conditions are satisfied:
 - [ ] Independent QA is completed by someone other than the implementer.
 - [ ] Blocking findings are resolved or formally accepted by an authorized human.
 - [ ] Required senior technical review is complete.
-- [ ] Human merge approval is granted.
-- [ ] Changes are merged and integration verification is complete.
+- [ ] Human approval is granted for the feature merge into `develop` where that test-integration step applies.
+- [ ] Test deployment is verified and human acceptance is recorded where applicable.
+- [ ] Separate human authorization is granted for production promotion where applicable.
+- [ ] Changes are merged and the required integration/production verification is complete.
 - [ ] Documentation and project records are updated where necessary.
 - [ ] Deployment is separately authorized if applicable.
 
@@ -510,7 +518,7 @@ Changes to roles, decision rights, required quality gates, or security rules req
 
 **The objective is dependable software delivery through clear ownership, coordinated execution, independent verification, transparent evidence, and human accountability—not simply maximizing the number of agents involved.**
 
-## 13. Context loading and documentation ownership
+## 18. Context loading and documentation ownership
 
 The AI Development Team repository is a shared standards reference, not a mandatory context dependency for every task. AI participants should load the minimum context necessary to perform their assigned work.
 
