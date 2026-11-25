@@ -116,7 +116,7 @@ Use the existing states from the onboarding standard:
 | **In Progress** | Assigned developer is implementing the task |
 | **In Review** | Implementation is submitted for independent QA, then senior technical review |
 | **Revision** | The original developer must correct findings or clarify the implementation |
-| **Ready to Merge** | Required reviews and human acceptance are complete; authorized integration/promotion can proceed |
+| **Ready to Merge** | Required reviews and human acceptance are complete; the change is eligible for production promotion, subject to separate explicit authorization |
 | **Done** | Changes are merged and verified according to project policy |
 | **Blocked** | A dependency, decision, permission, environment, or external issue prevents progress |
 
@@ -144,11 +144,11 @@ The transitions have these meanings:
 - **In Review → Revision:** QA or senior review finds actionable issues, or required clarification is missing.
 - **Revision → In Progress:** The original developer accepts the findings and resumes implementation.
 - **In Progress → In Review:** The developer submits the revised change and updated evidence for another independent QA pass.
-- **In Review → Ready to Merge:** Independent QA and required senior review pass, and the Team Lead has accepted the test deployment.
-- **Ready to Merge → Done:** Authorized production promotion/merge and required verification are complete.
+- **In Review → Ready to Merge:** Independent QA and required senior review pass; the Team Lead explicitly authorizes the feature PR merge into `develop`; the test deployment is verified; and the Team Lead accepts the tested result.
+- **Ready to Merge → Done:** The Team Lead separately authorizes the specific production promotion to `master`; the authorized release process completes; and required production verification is recorded.
 - **Any active state → Blocked:** Record the blocker, impact, owner, and action needed. Return to the appropriate previous state when resolved.
 
-Use comments to make the current substage explicit while the card remains in In Review. Examples: "QA 1 in progress", "QA passed; awaiting ChatGPT review", "ChatGPT review passed; awaiting test deployment", and "Test deployment ready; awaiting Team Lead acceptance".
+Use comments to make the current substage explicit while the card remains in In Review. Examples: "QA 1 in progress", "QA passed; awaiting ChatGPT review", "ChatGPT review passed; awaiting Team Lead authorization to merge into develop", "Merged into develop; awaiting test deployment", and "Test deployment ready; awaiting Team Lead acceptance". Record production authorization separately after the card reaches Ready to Merge.
 
 ## 5. Developer workflow
 
@@ -225,19 +225,19 @@ If ChatGPT passes, the card remains In Review while the coordinator records that
 
 The test environment is deployed from `develop`.
 
-After QA and ChatGPT senior review pass:
+After independent QA and ChatGPT senior review pass:
 
-1. Claude.ai (or another authorized coordinator) confirms the feature PR targets `develop`, required checks pass, and the change is ready to integrate.
-2. The PR is merged into `develop` through the project's approved process. Branch protection and required checks remain in force.
-3. The test site is deployed from the resulting `develop` commit, automatically or through the authorized Render workflow.
+1. The coordinator confirms the feature PR targets `develop`, required checks pass, and the change is ready for test integration.
+2. The Team Lead explicitly authorizes that specific feature PR to merge into `develop`. An AI reviewer's PASS is a recommendation, not merge authorization. The authorized operator merges it through the project's approved process; branch protection and required checks remain in force.
+3. The test site is deployed from the resulting `develop` commit, automatically or through the authorized deployment process.
 4. Record the deployed commit SHA, test URL, deployment result, and relevant health check in the card.
-5. The Team Lead performs manual acceptance testing against the approved criteria.
+5. The Team Lead performs manual acceptance testing against the approved criteria and records ACCEPTED or REJECTED.
 
 Claude.ai performs the deployment only if it actually has the required Render access. Otherwise it coordinates an authorized operator and records the confirmed result. Do not claim a deployment succeeded without evidence.
 
 If human testing fails, record expected versus actual behavior and reproduction steps. Move the card to Revision; the original developer fixes it, and independent QA and senior review are repeated as appropriate before redeployment.
 
-If human testing passes, the Team Lead records explicit acceptance. The card can then move to Ready to Merge for production promotion.
+If human testing passes, the Team Lead records explicit acceptance. The card can then move to Ready to Merge. This state means the change is eligible for production promotion; it does not itself authorize the release. The Team Lead must separately authorize the specific promotion to `master`.
 
 ## 9. Branching and environment strategy
 
@@ -263,9 +263,10 @@ feature/<task-name> (developer branch)
 
 Rules:
 - Feature branches are created from the latest `develop`.
-- Feature PRs target `develop`, never `master).
+- Feature PRs target `develop`, never `master`.
 - Developers do not push directly to `develop` or `master`.
 - Developers do not merge their own feature PRs.
+- A feature PR may be merged into `develop` only after required reviews/checks pass and the Team Lead explicitly authorizes that specific test-integration merge.
 - Test deployment uses the exact integrated `develop` commit.
 - Production promotion happens only after Team Lead acceptance and explicit authorization.
 - Production promotion should normally be a reviewed PR from `develop` to `master`, or a documented release process appropriate to the project.
