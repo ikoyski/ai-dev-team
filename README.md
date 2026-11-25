@@ -39,7 +39,8 @@ Each project repository remains the source of truth for its own technical contex
     │   ├── technical-planning/
     │   ├── code-review/
     │   ├── independent-qa/
-    │   └── security-review/
+    │   ├── security-review/
+    │   └── project-coordination/
     └── projects/
 
 Shared skills provide focused, reusable procedures and should be loaded only when relevant. Project-specific skills remain in their project repositories.
@@ -60,5 +61,6 @@ Shared skills provide focused, reusable procedures and should be loaded only whe
 - [Code Review](skills/code-review/SKILL.md) — assess an actual code change and report evidence-based findings.
 - [Independent QA](skills/independent-qa/SKILL.md) — verify another contributor's implementation against acceptance criteria.
 - [Security Review](skills/security-review/SKILL.md) — assess security risks and control gaps.
+- [Project Coordination](skills/project-coordination/SKILL.md) — turn approved plans into tracked tasks and coordinate ownership, workflow, and handoffs.
 
 Load a skill only when its task is relevant. Keep project-specific procedures in the project repository; shared skills must not become a dependency for routine project work.
