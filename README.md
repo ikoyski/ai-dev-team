@@ -10,7 +10,20 @@ Shared standards and operating guides for human and AI-assisted software develop
 
 These documents define reusable team roles, responsibilities, development lifecycle, task contracts, review and QA practices, collaboration protocols, and security expectations. They are not specific to any organization, repository, coding agent, model provider, or project-management tool. Webtools Kanban is one example integration, not the team's identity or scope.
 
-Project-specific documentation should describe the architecture, conventions, environments, and integration details unique to that project, while referencing these shared standards.
+Project-specific documentation is authoritative for that project's architecture, conventions, environments, and technical decisions. The central standards in this repository are an optional reference and should be consulted only when a task requires shared team roles, workflow, governance, or templates.
+
+## Context loading policy
+
+**Project context by default; team context only when needed.**
+
+- Start with the individual project's own instructions and load only the project documentation relevant to the task.
+- Do not fetch or load this repository by default for ordinary implementation, bug fixes, or project-specific code reviews.
+- Consult the relevant central guide only when shared team standards are needed (for example, role assignment, cross-agent handoffs, workflow states, branching policy, or creating a requirements plan).
+- Load templates and examples only when creating the corresponding artifact.
+- Do not duplicate project architecture or technical instructions here, and do not copy the entire team standard into each project.
+- If a project adopts these standards, its own instructions may link to this repository without requiring agents to read it on every task.
+
+Each project repository remains the source of truth for its own technical context. This repository owns only shared, reusable team practices.
 
 ## Repository structure
 
