@@ -1,6 +1,6 @@
-# Webtools AI Development Team
+# AI Development Team
 
-Shared standards and operating guides for human and AI-assisted software development across all current and future Webtools projects.
+Shared standards and operating guides for human and AI-assisted software development across projects of any organization, domain, or scale.
 
 ## Start here
 
@@ -8,7 +8,7 @@ Shared standards and operating guides for human and AI-assisted software develop
 
 ## Scope
 
-These documents define reusable team roles, responsibilities, development lifecycle, task contracts, review and QA practices, collaboration protocols, and security expectations. They are not specific to Webtools Kanban or any single repository, coding agent, model provider, or project-management tool.
+These documents define reusable team roles, responsibilities, development lifecycle, task contracts, review and QA practices, collaboration protocols, and security expectations. They are not specific to any organization, repository, coding agent, model provider, or project-management tool. Webtools Kanban is one example integration, not the team's identity or scope.
 
 Project-specific documentation should describe the architecture, conventions, environments, and integration details unique to that project, while referencing these shared standards.
 
