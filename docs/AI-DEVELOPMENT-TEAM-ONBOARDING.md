@@ -522,6 +522,7 @@ The AI Development Team repository is a shared standards reference, not a mandat
 4. Read only the relevant central guide or template. Do not load the entire repository by default.
 5. Do not fetch this repository for ordinary project implementation, bug fixes, or project-specific reviews unless a shared team standard is actually relevant.
 6. A link to this repository in a project's `README.md`, `CLAUDE.md`, `AGENTS.md`, or other instructions is a reference, not an instruction to retrieve it on every session or task.
+7. Load a shared or project-specific skill only when it directly supports the assigned task; do not load every available skill by default. Shared reusable procedures live in this repository's `skills/` directory, while project-specific procedures remain in the relevant project repository. Skills supplement this standard and project instructions; they do not override approved requirements, project policy, or human decision rights. See the [Skill Authoring Standard](SKILL-AUTHORING-STANDARD.md).
 
 ### Documentation ownership
 
