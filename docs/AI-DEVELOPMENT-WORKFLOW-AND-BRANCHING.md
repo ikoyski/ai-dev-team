@@ -25,7 +25,7 @@ OpenRouter is the model/provider routing layer; Claude Code is the coding harnes
 |---|---|---|
 | Human Team Lead | Product Owner and final authority | Discusses needs, approves plans, prioritizes work, reviews Kanban status, tests the test environment, authorizes production promotion |
 | ChatGPT.com | Chief Architect / Requirements Author / Senior Code Reviewer | Creates and updates requirement plans in this repository, inspects project code, prepares technical plans, reviews PRs, performs explicitly authorized GitHub merge operations |
-| Claude.ai | Project Coordinator | Reads approved plans, creates/updates Kanban cards, records handoffs, moves cards, coordinates work, initiates or coordinates test deployment if authorized access exists |
+| Claude.ai | Project Coordinator (may support architecture discussions when assigned) | Reads approved plans, creates/updates Kanban cards, records handoffs, moves cards, coordinates work, initiates or coordinates test deployment if authorized access exists |
 | Antigravity | Developer 1 / QA 2 | Implements assigned tasks or independently reviews Claude Code changes |
 | Claude Code using OpenRouter | QA 1 / Developer 2 | Independently reviews Antigravity changes or implements assigned tasks |
 
@@ -39,7 +39,7 @@ Before assigning an action, confirm that the participant has the required access
 | Write the AI Development Team repository | Author/update approved planning artifacts | ChatGPT or another authorized repository contributor performs the update |
 | Kanban MCP | Read cards, comment, and move cards using supported operations | Coordinator or Team Lead with access performs the tracker update |
 | Project repository | Inspect code, create branches, commit, push, open PRs, review diffs | Request repository access or a handoff containing sufficient review evidence; do not claim code inspection |
-| Render / deployment controls | Deploy or inspect the test environment within granted permissions | Prepare deployment instructions and hand off to the authorized operator |
+| Deployment platform / controls (e.g., Render) | Deploy or inspect the test environment within granted permissions | Prepare deployment instructions and hand off to the authorized operator |
 | Test site | Perform relevant manual validation | Ask the Team Lead or authorized tester to perform acceptance testing |
 
 Access is environment- and account-specific and can change. Do not treat this table as a promise that a product always has a capability. Check the actual connection and permissions at the time of work.
@@ -114,7 +114,7 @@ Use the existing states from the onboarding standard:
 | **Backlog** | Work idea or request not yet approved or sufficiently specified |
 | **Ready** | Approved task with clear scope, acceptance criteria, dependencies, developer, and QA reviewer |
 | **In Progress** | Assigned developer is implementing the task |
-| **In Review** | Implementation is submitted for independent QA, then senior technical review |
+| **In Review** | Implementation is submitted for independent QA and senior technical review, then remains in review through authorized test integration, deployment, and Team Lead acceptance |
 | **Revision** | The original developer must correct findings or clarify the implementation |
 | **Ready to Merge** | Required reviews and human acceptance are complete; the change is eligible for production promotion, subject to separate explicit authorization |
 | **Done** | Changes are merged and verified according to project policy |
@@ -131,7 +131,7 @@ Backlog
   -> In Review
        -> Revision -> In Progress -> In Review
        -> Ready to Merge
-  -> Done
+            -> Done
 
 Any active state -> Blocked -> appropriate prior state
 ```
@@ -141,11 +141,12 @@ The transitions have these meanings:
 - **Backlog → Ready:** The plan/task is approved, sufficiently specified, dependencies are resolved, and developer/QA ownership is known.
 - **Ready → In Progress:** The assigned developer accepts the card and begins work.
 - **In Progress → In Review:** Implementation is committed and pushed, a reviewable PR targets `develop`, and the developer handoff is recorded.
-- **In Review → Revision:** QA or senior review finds actionable issues, or required clarification is missing.
+- **In Review → Revision:** QA or senior review finds actionable implementation issues, or the original developer can resolve a specific missing detail within the approved requirements.
 - **Revision → In Progress:** The original developer accepts the findings and resumes implementation.
 - **In Progress → In Review:** The developer submits the revised change and updated evidence for another independent QA pass.
 - **In Review → Ready to Merge:** Independent QA and required senior review pass; the Team Lead explicitly authorizes the feature PR merge into `develop`; the test deployment is verified; and the Team Lead accepts the tested result.
 - **Ready to Merge → Done:** The Team Lead separately authorizes the specific production promotion to `master`; the authorized release process completes; and required production verification is recorded.
+- **NEEDS CLARIFICATION:** Keep the card in In Review while the coordinator seeks a decision if the question is minor and can be resolved without changing approved scope. Move it to Revision when the developer must clarify or correct the implementation. Move it to Blocked when progress depends on an external decision, missing access, unavailable environment, or unresolved requirements/scope approval; record who must decide and what is needed.
 - **Any active state → Blocked:** Record the blocker, impact, owner, and action needed. Return to the appropriate previous state when resolved.
 
 Use comments to make the current substage explicit while the card remains in In Review. Examples: "QA 1 in progress", "QA passed; awaiting ChatGPT review", "ChatGPT review passed; awaiting Team Lead authorization to merge into develop", "Merged into develop; awaiting test deployment", and "Test deployment ready; awaiting Team Lead acceptance". Record production authorization separately after the card reaches Ready to Merge.
@@ -233,9 +234,9 @@ After independent QA and ChatGPT senior review pass:
 4. Record the deployed commit SHA, test URL, deployment result, and relevant health check in the card.
 5. The Team Lead performs manual acceptance testing against the approved criteria and records ACCEPTED or REJECTED.
 
-Claude.ai performs the deployment only if it actually has the required Render access. Otherwise it coordinates an authorized operator and records the confirmed result. Do not claim a deployment succeeded without evidence.
+Claude.ai performs the deployment only if it actually has the required access to the deployment platform and its controls (for example, Render). Otherwise it coordinates an authorized operator and records the confirmed result. Do not claim a deployment succeeded without evidence.
 
-If human testing fails, record expected versus actual behavior and reproduction steps. Move the card to Revision; the original developer fixes it, and independent QA and senior review are repeated as appropriate before redeployment.
+If human testing fails, record expected versus actual behavior and reproduction steps. The default response is to fix forward on `develop`: move the card to Revision, have the original developer correct the change, and repeat independent QA and senior review as appropriate before redeployment. Do not promote the rejected change to production. Revert the integration from `develop` when necessary to restore a stable test branch, such as when the change causes a serious regression, security issue, or blocks other work; record the revert commit and decision on the card. The Team Lead or authorized operator decides whether to fix forward or revert based on impact.
 
 If human testing passes, the Team Lead records explicit acceptance. The card can then move to Ready to Merge. This state means the change is eligible for production promotion; it does not itself authorize the release. The Team Lead must separately authorize the specific promotion to `master`.
 
@@ -276,6 +277,8 @@ Rules:
 A `develop` branch may contain multiple features, including work not yet accepted by the Team Lead. Before promoting `develop` to `master`, inspect the complete commit/change set that would be released. Do not accidentally release unrelated, unfinished, or untested work.
 
 If `develop` contains unaccepted changes, use a controlled release branch or another project-approved promotion strategy that includes only accepted work. Record the exact release commit and included cards.
+
+Rejected test integrations remain in Revision and are not eligible for production promotion. Fix forward on `develop` by default; revert the integration when needed to restore test-branch stability or contain a serious regression/security issue. Record the chosen action and exact commits on the card.
 
 ### Production promotion
 
@@ -374,7 +377,7 @@ The coordinator keeps the card current when it has access. When it does not, the
 - No agent bypasses branch protections or human approval.
 - Test deployment and production deployment are separately verified.
 - Do not promote unaccepted work merely because it is present in `develop`.
-- No agent reports a Git, Kanban, or Render action as complete without confirmation from the relevant system.
+- No agent reports a Git, Kanban, or deployment-platform action as complete without confirmation from the relevant system.
 - Record decisions and evidence in shared artifacts so the process does not depend on private chat history.
 
 ## 13. Context loading and documentation boundaries
