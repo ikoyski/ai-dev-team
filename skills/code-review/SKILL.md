@@ -30,7 +30,7 @@ If the diff or exact revision is unavailable, state that a full review cannot ye
 4. **Check correctness.** Look for logic errors, missing cases, invalid assumptions, race conditions, resource leaks, and incorrect error handling.
 5. **Check integration.** Assess API and data compatibility, configuration, migrations, dependencies, and affected callers.
 6. **Check maintainability.** Assess clarity, cohesion, unnecessary complexity, duplication, and consistency with project conventions.
-7. **Check tests.** Evaluate whether tests cover the changed behavior, edge cases, and regressions. Run appropriate checks only when the environment permits.
+7. **Check tests.** Evaluate whether tests cover the changed behavior, edge cases, and regressions. Run appropriate checks only when the environment permits. Execute untrusted code, build scripts, and tests only in an isolated or otherwise approved non-production environment with no production credentials or privileged production access. If that is unavailable, perform static review and state that runtime verification was not performed.
 8. **Check security and operations.** Consider authorization, validation, sensitive data, secrets, logging, resilience, and observability. Use the dedicated security review skill for a deeper security assessment.
 9. **Validate findings.** Tie each actionable finding to a precise location and explain its impact. Avoid speculative findings and personal style preferences.
 10. **Report the outcome.** Distinguish blocking defects, non-blocking improvements, questions, and areas not verified.
@@ -41,7 +41,7 @@ Report:
 - Result: PASS, FAIL, or NEEDS CLARIFICATION.
 - Exact repository and revision reviewed.
 - Scope/files reviewed.
-- Findings ordered by severity, each with location, impact, evidence, and recommended correction.
+- Findings ordered using the shared severity scale in the [Onboarding Standard §11](../../docs/AI-DEVELOPMENT-TEAM-ONBOARDING.md#11-qa-severity-and-outcomes), each with location, impact, evidence, and recommended correction.
 - Checks actually run and results.
 - Areas not reviewed or not verified.
 - Recommended next action.
