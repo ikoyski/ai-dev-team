@@ -29,10 +29,20 @@ Each project repository remains the source of truth for its own technical contex
 
     .
     ├── README.md
-    └── docs/
-        └── AI-DEVELOPMENT-TEAM-ONBOARDING.md
+    ├── docs/
+    │   ├── AI-DEVELOPMENT-TEAM-ONBOARDING.md
+    │   ├── AI-DEVELOPMENT-WORKFLOW-AND-BRANCHING.md
+    │   ├── SKILL-AUTHORING-STANDARD.md
+    │   └── templates/
+    ├── skills/
+    │   ├── requirements-analysis/
+    │   ├── technical-planning/
+    │   ├── code-review/
+    │   ├── independent-qa/
+    │   └── security-review/
+    └── projects/
 
-Additional focused guides and tool-specific integration instructions may be added as the workflow matures.
+Shared skills provide focused, reusable procedures and should be loaded only when relevant. Project-specific skills remain in their project repositories.
 
 
 ## Operating documentation
@@ -41,3 +51,14 @@ Additional focused guides and tool-specific integration instructions may be adde
 - [AI Development Workflow and Branching](docs/AI-DEVELOPMENT-WORKFLOW-AND-BRANCHING.md) — current capability-based agent handoffs, requirement planning, QA, test deployment, human acceptance, and Git branch strategy.
 - [Feature Requirements Template](docs/templates/FEATURE-REQUIREMENTS-TEMPLATE.md) — reusable starting point for approved feature plans.
 - [Project Requirement Plans](projects/README.md) — directory and naming convention for project plans.
+- [Skill Authoring Standard](docs/SKILL-AUTHORING-STANDARD.md) — format, placement, quality, and maintenance rules for reusable skills.
+
+## Shared skills
+
+- [Requirements Analysis](skills/requirements-analysis/SKILL.md) — clarify requests and produce testable requirements.
+- [Technical Planning](skills/technical-planning/SKILL.md) — turn approved requirements into a technical approach and task breakdown.
+- [Code Review](skills/code-review/SKILL.md) — assess an actual code change and report evidence-based findings.
+- [Independent QA](skills/independent-qa/SKILL.md) — verify another contributor's implementation against acceptance criteria.
+- [Security Review](skills/security-review/SKILL.md) — assess security risks and control gaps.
+
+Load a skill only when its task is relevant. Keep project-specific procedures in the project repository; shared skills must not become a dependency for routine project work.
