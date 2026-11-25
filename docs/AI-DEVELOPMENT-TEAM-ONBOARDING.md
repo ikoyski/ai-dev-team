@@ -115,12 +115,14 @@ This is the current arrangement, not a permanent product-specific assignment:
 | ChatGPT.com | Chief Architect / Senior Technical Reviewer; can implement selected changes | Can work with connected repositories; currently no Kanban MCP access |
 | Claude.ai | Project Coordinator / Architecture Partner | Has Kanban MCP access; currently cannot directly modify connected repositories |
 | Antigravity | Developer / independent QA reviewer | Use only explicitly configured repository and tool access |
-| Claude Code via OpenRouter | Developer / independent QA reviewer | Claude Code is the coding environment; OpenRouter is the model/provider routing layer |
+| Claude Code using OpenRouter | Developer / independent QA reviewer | Claude Code is the coding environment; OpenRouter is the model/provider routing layer. Record the selected model when relevant. |
 
 Default cross-QA:
-- Antigravity implementation → Claude Code QA.
-- Claude Code implementation → Antigravity QA.
-- ChatGPT implementation → assign Antigravity or Claude Code as independent QA.
+- Antigravity (Dev 1) implementation → Claude Code using OpenRouter (QA 1).
+- Claude Code using OpenRouter (Dev 2) implementation → Antigravity (QA 2).
+- ChatGPT implementation → assign Antigravity or Claude Code using OpenRouter as independent QA.
+
+These are default assignments, not assumptions about tool access. Use the workflow in [AI Development Workflow and Branching](WORKFLOW-AND-BRANCHING.md) to determine the actual handoff based on each participant's available repository, Kanban, and deployment capabilities.
 
 Verify access before assigning work. Never assume one environment inherits another environment's tools or permissions. Record the actual OpenRouter model when relevant.
 
@@ -355,7 +357,7 @@ Suggested type labels:
 
 Add a project/repository label when a shared board contains multiple projects. Preserve existing labels when an API replaces the full label list.
 
-Default columns: Backlog → Ready → In Progress → In Review → Revision → Ready to Merge → Done, with Blocked available from active stages.
+Default columns: Backlog → Ready → In Progress → In Review → Revision → Ready to Merge → Done, with Blocked available from active stages. Preserve these standard states; use comments and handoff conventions to distinguish implementation QA, senior review, test deployment, and human acceptance rather than adding extra mandatory columns. See [AI Development Workflow and Branching](WORKFLOW-AND-BRANCHING.md).
 
 ## 9. Communication and shared context
 
