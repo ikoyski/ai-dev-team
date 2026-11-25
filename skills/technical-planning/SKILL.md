@@ -47,7 +47,7 @@ A technical plan should include, as applicable:
 - Security and operational considerations.
 - Alternatives and trade-offs.
 - Risks, dependencies, migration, and rollback.
-- Task breakdown and acceptance criteria.
+- Task breakdown and acceptance criteria, using the [Feature Requirements Template](../../docs/templates/FEATURE-REQUIREMENTS-TEMPLATE.md) when preparing the formal requirements/plan artifact.
 - Test and deployment strategy.
 - Open decisions and approval status.
 
