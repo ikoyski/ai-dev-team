@@ -11,7 +11,7 @@ This guide translates the organization-wide standard into a practical workflow f
 1. The Human Team Lead owns priorities, approves requirements and consequential decisions, performs final test acceptance, and authorizes production promotion.
 2. ChatGPT is the primary requirements and technical-plan author, and can later perform senior code review and approved GitHub operations.
 3. Claude.ai is the primary work coordinator and Kanban operator when it has Kanban MCP access.
-4. Antigravity and Claude Code using OpenRouter are the default implementation and independent QA participants.
+4. Registered DevN instances are the implementation and independent QA pool; assign by capability, capacity, access, and independence rather than by tool name alone.
 5. The same agent must not implement and independently QA the same change.
 6. A participant performs only actions supported by its actual access. If it cannot access a system, it prepares a clear handoff to someone who can.
 7. The standard workflow states remain those in the onboarding document. This guide does not require extra columns for each kind of review or deployment.
