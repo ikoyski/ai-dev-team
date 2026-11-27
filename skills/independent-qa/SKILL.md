@@ -18,6 +18,7 @@ Use when assigned as QA for work implemented by another contributor. The QA revi
 - Original task and approved requirements.
 - Exact PR, branch, commit, or build under review.
 - Developer handoff and known test evidence.
+- The access-controlled DevN roster and [Developer Instance Identity and Access](../../docs/DEVELOPER-INSTANCE-IDENTITY-AND-ACCESS.md), when the contributor is an AI developer instance.
 - Relevant project instructions and a safe environment for any execution. Any execution of untrusted code, build scripts, or tests must occur in an isolated or otherwise approved non-production environment with no production credentials or privileged production access. If that cannot be assured, perform static verification only and report runtime checks as not performed.
 - Read-only access is the default; obtain explicit authorization before any action that changes shared state.
 
