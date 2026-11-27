@@ -32,8 +32,11 @@ Each project repository remains the source of truth for its own technical contex
     ├── docs/
     │   ├── AI-DEVELOPMENT-TEAM-ONBOARDING.md
     │   ├── AI-DEVELOPMENT-WORKFLOW-AND-BRANCHING.md
+    │   ├── DEVELOPER-INSTANCE-IDENTITY-AND-ACCESS.md
     │   ├── SKILL-AUTHORING-STANDARD.md
     │   └── templates/
+    │       ├── FEATURE-REQUIREMENTS-TEMPLATE.md
+    │       └── DEVELOPER-INSTANCE-REGISTRATION-TEMPLATE.md
     ├── skills/
     │   ├── requirements-analysis/
     │   ├── technical-planning/
@@ -50,7 +53,9 @@ Shared skills provide focused, reusable procedures and should be loaded only whe
 
 - [AI Development Team Onboarding & Operating Standard](docs/AI-DEVELOPMENT-TEAM-ONBOARDING.md) — organization-wide roles, principles, workflow states, quality gates, and security rules.
 - [AI Development Workflow and Branching](docs/AI-DEVELOPMENT-WORKFLOW-AND-BRANCHING.md) — current capability-based agent handoffs, requirement planning, QA, test deployment, human acceptance, and Git branch strategy.
+- [Developer Instance Identity and Access](docs/DEVELOPER-INSTANCE-IDENTITY-AND-ACCESS.md) — stable Dev1…DevN identities, per-instance SSO/Kanban users, MCP OAuth client reuse, GitHub attribution, and credential isolation.
 - [Feature Requirements Template](docs/templates/FEATURE-REQUIREMENTS-TEMPLATE.md) — reusable starting point for approved feature plans.
+- [Developer Instance Registration Template](docs/templates/DEVELOPER-INSTANCE-REGISTRATION-TEMPLATE.md) — non-secret onboarding and access verification record for each DevN.
 - [Project Requirement Plans](projects/README.md) — directory and naming convention for project plans.
 - [Skill Authoring Standard](docs/SKILL-AUTHORING-STANDARD.md) — format, placement, quality, and maintenance rules for reusable skills.
 
