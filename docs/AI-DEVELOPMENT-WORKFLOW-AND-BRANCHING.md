@@ -16,6 +16,7 @@ This guide translates the organization-wide standard into a practical workflow f
 6. A participant performs only actions supported by its actual access. If it cannot access a system, it prepares a clear handoff to someone who can.
 7. The standard workflow states remain those in the onboarding document. This guide does not require extra columns for each kind of review or deployment.
 8. GitHub PRs and commits are the evidence of code changes. Kanban cards coordinate work. Approved requirement documents define intended behavior.
+9. Every independently operating developer runtime has a stable DevN identity (Dev1, Dev2, … DevN), regardless of tool, model, or provider.
 
 OpenRouter is the model/provider routing layer; Claude Code is the coding harness. Identify the coding environment as Claude Code in task reports and optionally record the selected OpenRouter model.
 
@@ -26,8 +27,31 @@ OpenRouter is the model/provider routing layer; Claude Code is the coding harnes
 | Human Team Lead | Product Owner and final authority | Discusses needs, approves plans, prioritizes work, reviews Kanban status, tests the test environment, authorizes production promotion |
 | ChatGPT.com | Chief Architect / Requirements Author / Senior Code Reviewer | Creates and updates requirement plans in this repository, inspects project code, prepares technical plans, reviews PRs, performs explicitly authorized GitHub merge operations |
 | Claude.ai | Project Coordinator (may support architecture discussions when assigned) | Reads approved plans, creates/updates Kanban cards, records handoffs, moves cards, coordinates work, initiates or coordinates test deployment if authorized access exists |
-| Antigravity | Developer 1 / QA 2 | Implements assigned tasks or independently reviews Claude Code changes |
-| Claude Code using OpenRouter | QA 1 / Developer 2 | Independently reviews Antigravity changes or implements assigned tasks |
+| Dev1 — Claude Code | Developer / independent QA reviewer | Implements assigned tasks or independently reviews another DevN's changes; uses the `kanban-claude` MCP OAuth client with its own SSO/Kanban user |
+| Dev2 — Antigravity | Developer / independent QA reviewer | Implements assigned tasks or independently reviews another DevN's changes; uses the `kanban-antigravity` MCP OAuth client with its own SSO/Kanban user |
+| Dev3 … DevN — additional instances | Developer / independent QA reviewer | Onboarded individually with stable IDs, separate identities/credentials, and the existing MCP client registration for the application type |
+
+### Developer identity and MCP access model
+
+Developer IDs identify independently operating instances, not tool families. Dev1 remains Dev1 if its model/provider route changes; a second independently provisioned Claude Code or Antigravity runtime receives a new DevN ID.
+
+| Instance | Runtime/tool | Kanban MCP OAuth client | Kanban login |
+|---|---|---|---|
+| Dev1 | Claude Code | `kanban-claude` | Dev1's own Google/SSO account and distinct Kanban user |
+| Dev2 | Antigravity | `kanban-antigravity` | Dev2's own Google/SSO account and distinct Kanban user |
+| Dev3 | Another Claude Code instance | `kanban-claude` (reuse) | Dev3's own Google/SSO account and distinct Kanban user |
+| Dev4 | Another Antigravity instance | `kanban-antigravity` (reuse) | Dev4's own Google/SSO account and distinct Kanban user |
+| DevN | Any already-supported client type | Reuse the matching application-type client ID | DevN's own Google/SSO account and distinct Kanban user |
+
+Rules:
+- One OAuth client registration per MCP client application/integration type, not one per DevN. The client ID identifies the connecting application; the token subject identifies the user.
+- Every DevN signs in independently and has its own OAuth token store, browser profile, workspace, and GitHub credential context. Never copy tokens or sessions between instances.
+- A new DevN using an existing supported client type should not require a new OAuth registration or Auth Server code change, provided the existing registration supports the redirect URI, resource, and scopes.
+- Each Kanban user receives only the board membership and permissions required for that developer's tasks. Developer accounts never receive human Team Lead approval or production authority.
+- Map each DevN to an approved, separately attributable GitHub identity/automation identity. If a shared GitHub App performs operations for multiple DevN instances, record both the actual GitHub App actor and the initiating DevN in PR/commit handoffs; do not describe the shared App as a unique GitHub actor for each instance.
+- Use `dev:devN` and `qa:devN` labels or native owner/reviewer fields so Kanban assignments identify the instance, not just its tool family.
+
+Maintain actual account mappings in the access-controlled roster using [Developer Instance Registration Template](templates/DEVELOPER-INSTANCE-REGISTRATION-TEMPLATE.md). Never store credentials or private account details in this public standards repository. The canonical requirements are in [Developer Instance Identity and Access](DEVELOPER-INSTANCE-IDENTITY-AND-ACCESS.md).
 
 ### Capability-based handoff
 
@@ -153,14 +177,16 @@ Use comments to make the current substage explicit while the card remains in In 
 
 ## 5. Developer workflow
 
-Default developer/QA pairing:
+Initial developer/QA pairing:
 
 | Developer | Independent QA |
 |---|---|
-| Antigravity (Dev 1) | Claude Code using OpenRouter (QA 1) |
-| Claude Code using OpenRouter (Dev 2) | Antigravity (QA 2) |
+| Dev1 — Claude Code | Dev2 — Antigravity |
+| Dev2 — Antigravity | Dev1 — Claude Code |
 
-The coordinator may assign either developer based on capacity and access. Pairing can change only if a different independent reviewer is named before QA.
+For Dev3 through DevN, the coordinator assigns a different active developer instance based on capability, capacity, project access, and independence. A developer instance must never QA its own implementation. A reviewer may use the same tool family as the implementer only when it is a separate DevN instance with its own workspace and credentials; prefer a different tool/provider for higher-risk work where practical.
+
+The coordinator may change pairings when a different independent reviewer is named before QA. Record the exact DevN IDs on the card and in each handoff.
 
 When a developer takes a task from Ready:
 
@@ -298,7 +324,7 @@ Use clear role attribution. Examples:
 
 **Developer handoff**
 ```text
-[Antigravity | Dev 1]
+[Claude Code | Dev1 | Developer]
 Status: Implementation complete
 Branch: feature/<name>
 PR: <link>
@@ -306,12 +332,14 @@ Commit: <sha>
 Summary: ...
 Tests run and results: ...
 Known limitations: ...
-Next: Independent QA by Claude Code.
+GitHub actor: <GitHub user or App identity>
+Initiating developer: Dev1
+Next: Independent QA by Dev2 (Antigravity).
 ```
 
 **QA report**
 ```text
-[Claude Code | QA 1 | OpenRouter model: <model, if useful>]
+[Antigravity | Dev2 | QA]
 Result: PASS / FAIL / NEEDS CLARIFICATION
 Reviewed PR/commit: ...
 Checks run: ...
@@ -370,7 +398,9 @@ The coordinator keeps the card current when it has access. When it does not, the
 
 ## 12. Safeguards
 
-- One primary developer and a different QA reviewer per task.
+- One primary DevN developer and a different DevN QA reviewer per task; record both identifiers.
+- Every DevN uses isolated credentials, OAuth token storage, browser profile, and workspace. Shared OAuth client IDs do not permit shared user sessions.
+- Record the actual GitHub user/App actor and the initiating DevN for source-control actions.
 - QA checks the actual source diff and exact commit.
 - QA does not directly edit the developer's branch by default.
 - Review PASS, human test acceptance, and production authorization are separate decisions.
