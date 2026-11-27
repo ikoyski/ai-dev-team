@@ -131,8 +131,8 @@ Verify access before assigning work. Never assume one environment inherits anoth
 ## 3. Decision rights and task accountability
 
 Every work item identifies:
-- **Owner:** one primary person or agent accountable for delivery.
-- **Reviewer:** a different person or agent responsible for independent QA.
+- **Owner:** one primary human or DevN instance accountable for delivery.
+- **Reviewer:** a different human or DevN instance responsible for independent QA; for AI developers, record the stable DevN ID.
 - **Technical authority:** architect or designated decision-maker when needed.
 - **Approver:** human authority required for the relevant merge, release, or risk level.
 
