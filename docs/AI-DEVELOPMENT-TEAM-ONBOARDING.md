@@ -105,6 +105,8 @@ The QA reviewer must differ from the implementation owner. QA is initially read-
 
 The senior reviewer should be independent of the implementation. If the reviewer authored the change, another qualified reviewer must perform this review.
 
+See [Developer Instance Identity and Access](DEVELOPER-INSTANCE-IDENTITY-AND-ACCESS.md) for the scalable DevN identity, account, OAuth-client, workspace-isolation, and attribution standard.
+
 ### Current role allocation
 
 This is the current arrangement, not a permanent product-specific assignment:
@@ -112,15 +114,18 @@ This is the current arrangement, not a permanent product-specific assignment:
 | Participant | Current role | Current access constraint |
 |---|---|---|
 | Human Team Lead | Product direction, prioritization, final approval | Human-controlled |
-| ChatGPT.com | Chief Architect / Senior Technical Reviewer; can implement selected changes | Can work with connected repositories; currently no Kanban MCP access |
-| Claude.ai | Project Coordinator | Has Kanban MCP access; currently cannot directly modify connected repositories |
-| Antigravity | Developer / independent QA reviewer | Use only explicitly configured repository and tool access |
-| Claude Code using OpenRouter | Developer / independent QA reviewer | Claude Code is the coding environment; OpenRouter is the model/provider routing layer. Record the selected model when relevant. |
+| Human Team Lead | Product direction, prioritization, final approval | Separate human Kanban identity; retains human-only approval authority |
+| ChatGPT | Chief Architect / Senior Technical Reviewer; may own architecture tasks | Distinct reviewer/architect attribution; never borrow another participant's identity |
+| Claude.ai | Project Coordinator | Coordinator identity; coordinates cards, handoffs, and assignments |
+| Dev1 — Claude Code | Developer / independent QA reviewer | Own distinct authenticated Kanban user; current MCP client type `kanban-claude` |
+| Dev2 — Antigravity | Developer / independent QA reviewer | Own distinct authenticated Kanban user; current MCP client type `kanban-antigravity` |
+| DevN — future instances | Developer / independent QA reviewer | Each instance receives its own stable DevN identity and authenticated Kanban user; OAuth client ID is shared by application/harness type, while tokens and user identities remain separate |
 
 Default cross-QA:
-- Antigravity (Dev 1) implementation → Claude Code using OpenRouter (QA 1).
-- Claude Code using OpenRouter (Dev 2) implementation → Antigravity (QA 2).
-- ChatGPT implementation → assign Antigravity or Claude Code using OpenRouter as independent QA.
+- Dev1 (Claude Code) implementation → Dev2 (Antigravity) as independent QA.
+- Dev2 (Antigravity) implementation → Dev1 (Claude Code) as independent QA.
+- Future DevN assignments follow the same rule: the QA reviewer must be a different authenticated developer instance from the implementation owner.
+- ChatGPT architecture/review work must be attributed to ChatGPT; when independent QA is required, assign a DevN reviewer without recording ChatGPT's work under that DevN identity.
 
 These are default assignments, not assumptions about tool access. Use the workflow in [AI Development Workflow and Branching](AI-DEVELOPMENT-WORKFLOW-AND-BRANCHING.md) to determine the actual handoff based on each participant's available repository, Kanban, and deployment capabilities.
 
