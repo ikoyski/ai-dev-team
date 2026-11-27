@@ -190,7 +190,7 @@ The coordinator may change pairings when a different independent reviewer is nam
 
 When a developer takes a task from Ready:
 
-1. Confirm the card is assigned to that developer.
+1. Confirm the card identifies this DevN instance as the primary developer, using a native owner field or the project's agreed `dev:devN` label/structured description.
 2. Read the full card and linked approved requirements.
 3. Read project instructions and relevant architecture documentation.
 4. Check dependencies, repository access, and current `develop` baseline.
@@ -210,7 +210,7 @@ If the developer cannot update Kanban, the implementation is not blocked solely 
 
 The assigned QA reviewer takes the card from In Review after the implementation handoff is available.
 
-1. Confirm the developer and QA identities are different.
+1. Confirm the developer and QA DevN IDs are different and that you are using your own workspace, Kanban user, and credentials.
 2. Read the approved requirement plan, card, acceptance criteria, and developer report.
 3. Inspect the actual PR, branch, and commit diff. Do not rely solely on the developer's summary.
 4. Run tests or reproduce behavior where practical and permitted.
@@ -341,7 +341,10 @@ Next: Independent QA by Dev2 (Antigravity).
 ```text
 [Antigravity | Dev2 | QA]
 Result: PASS / FAIL / NEEDS CLARIFICATION
+Developer: Dev1
+QA reviewer: Dev2
 Reviewed PR/commit: ...
+GitHub actor: <GitHub user or App identity, if relevant>
 Checks run: ...
 Findings:
 - [High] <file:line> — evidence, reproduction, expected result
@@ -380,6 +383,8 @@ Test scenarios: ...
 Findings: ...
 Production promotion authorized: YES / NO
 ```
+
+Replace the example Dev1/Dev2 identities above with the actual owner and reviewer for each task. Never use a tool name alone when multiple instances exist.
 
 Never put secrets, credentials, private keys, or sensitive personal data in cards or comments. Preserve existing labels if an API replaces the complete label list.
 
