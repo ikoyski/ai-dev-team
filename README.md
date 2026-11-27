@@ -18,7 +18,7 @@ Project-specific documentation is authoritative for that project's architecture,
 
 - Start with the individual project's own instructions and load only the project documentation relevant to the task.
 - Do not fetch or load this repository by default for ordinary implementation, bug fixes, or project-specific code reviews.
-- Consult the relevant central guide only when shared team standards are needed (for example, role assignment, cross-agent handoffs, workflow states, branching policy, or creating a requirements plan).
+- Consult the relevant central guide only when shared team standards are needed (for example, role assignment, developer-instance onboarding and access, cross-agent handoffs, workflow states, branching policy, or creating a requirements plan).
 - Load templates and examples only when creating the corresponding artifact.
 - Do not duplicate project architecture or technical instructions here, and do not copy the entire team standard into each project.
 - If a project adopts these standards, its own instructions may link to this repository without requiring agents to read it on every task.
