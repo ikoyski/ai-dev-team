@@ -79,10 +79,10 @@ Rules:
 
 Every DevN needs attributable GitHub activity, but the implementation must comply with GitHub's current terms, the organization's policy, and the available GitHub plan.
 
-- Map each DevN to an explicitly approved GitHub identity/automation identity. Suitable mechanisms may include organization-managed identities where available or GitHub App automation identities with clear per-DevN attribution.
+- Map each DevN to a distinct, explicitly approved GitHub attribution identity. Where permitted by GitHub and organization policy, use a dedicated user/machine identity for the instance; a separately configured GitHub App identity is another option.
 - Do not create extra personal accounts merely to bypass platform rules. Do not share the Team Lead's personal credentials, personal access tokens, SSH private keys, or browser session across agents.
 - If separate GitHub actors are provisioned per DevN, record the mapping and use the corresponding least-privilege credentials for that instance.
-- If a shared GitHub App performs actions for several DevN instances, record both the actual GitHub App actor and the initiating DevN in the PR body, commit metadata/trailers, or an attributable handoff. A shared App login is not itself proof of which DevN initiated an action.
+- If one shared GitHub App performs actions for several DevN instances, record both the actual GitHub App actor and the initiating DevN in the PR body, commit metadata/trailers, or an attributable handoff. A shared App login is not a distinct GitHub actor per DevN; document this as a reduced-attribution arrangement rather than claiming separate GitHub accounts.
 - Configure Git author name/email consistently with the approved identity. Where supported, use verified commit signing. Git author fields alone are self-asserted metadata and must not be treated as authentication.
 - Preserve the distinction between developer activity and human authorization. The Team Lead uses their own human GitHub identity for human-only review/approval and production authorization.
 
