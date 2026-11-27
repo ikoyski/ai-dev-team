@@ -27,8 +27,8 @@ OpenRouter is the model/provider routing layer; Claude Code is the coding harnes
 | Human Team Lead | Product Owner and final authority | Discusses needs, approves plans, prioritizes work, reviews Kanban status, tests the test environment, authorizes production promotion |
 | ChatGPT.com | Chief Architect / Requirements Author / Senior Code Reviewer | Creates and updates requirement plans in this repository, inspects project code, prepares technical plans, reviews PRs, performs explicitly authorized GitHub merge operations |
 | Claude.ai | Project Coordinator (may support architecture discussions when assigned) | Reads approved plans, creates/updates Kanban cards, records handoffs, moves cards, coordinates work, initiates or coordinates test deployment if authorized access exists |
-| Antigravity | Developer 1 / QA 2 | Implements assigned tasks or independently reviews Claude Code changes |
-| Claude Code using OpenRouter | QA 1 / Developer 2 | Independently reviews Antigravity changes or implements assigned tasks |
+| Claude Code (Dev1) | Developer / independent QA reviewer | Implements assigned tasks or independently reviews Antigravity changes; OpenRouter is an optional model/provider route |
+| Antigravity (Dev2) | Developer / independent QA reviewer | Implements assigned tasks or independently reviews Claude Code changes |
 
 ### Capability-based handoff
 
@@ -158,8 +158,8 @@ Initial developer/QA pairing:
 
 | Developer | Independent QA |
 |---|---|
-| Antigravity (Dev 1) | Claude Code using OpenRouter (QA 1) |
-| Claude Code using OpenRouter (Dev 2) | Antigravity (QA 2) |
+| Claude Code (Dev1) | Antigravity (Dev2) |
+| Antigravity (Dev2) | Claude Code (Dev1) |
 
 The coordinator may assign either developer based on capacity and access. Pairing can change only if a different independent reviewer is named before QA.
 
@@ -299,7 +299,7 @@ Use clear role attribution. Examples:
 
 **Developer handoff — Dev1 (Claude Code)**
 ```text
-[Antigravity | Dev 1]
+[Claude Code | Dev1 | OpenRouter model: <model, if useful>]
 Status: Implementation complete
 Branch: feature/<name>
 PR: <link>
@@ -307,12 +307,12 @@ Commit: <sha>
 Summary: ...
 Tests run and results: ...
 Known limitations: ...
-Next: Independent QA by Claude Code.
+Next: Independent QA by Antigravity.
 ```
 
 **QA report — Dev2 (Antigravity reviewing Dev1)**
 ```text
-[Claude Code | QA 1 | OpenRouter model: <model, if useful>]
+[Antigravity | Dev2]
 Result: PASS / FAIL / NEEDS CLARIFICATION
 Developer: Dev1
 QA reviewer: Dev2
