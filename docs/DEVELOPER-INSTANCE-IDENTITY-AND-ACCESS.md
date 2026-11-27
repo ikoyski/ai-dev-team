@@ -42,6 +42,8 @@ Each active DevN must have a separate, attributable identity at each system wher
 
 Do not use a shared human account as the identity for multiple DevN instances. The human Team Lead retains a separate human identity and remains the only authority for human-only approvals.
 
+The Human Team Lead uses their own human identity and the separately registered web client (for the current Kanban integration, `kanban-web`). This identity is never shared with DevN instances.
+
 ### 3.1 Google / SSO and Kanban identity
 
 - Provision one unique Google/SSO account per DevN where Google is the configured identity provider. Prefer managed organizational accounts when available and follow the provider's account policies.
