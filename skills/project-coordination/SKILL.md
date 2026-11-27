@@ -9,7 +9,7 @@ description: Turn approved plans into actionable tracked work, maintain task own
 
 Coordinate approved project work from task preparation through implementation, review, acceptance, and completion. Keep the work tracker accurate and make handoffs clear without changing approved requirements or exercising authority reserved for the Team Lead.
 
-This skill describes a reusable coordination procedure. Follow the project's own tracker conventions and the shared [AI Development Team Onboarding Standard](../../docs/AI-DEVELOPMENT-TEAM-ONBOARDING.md) and [Workflow and Branching Guide](../../docs/AI-DEVELOPMENT-WORKFLOW-AND-BRANCHING.md) when the project has adopted them.
+This skill describes a reusable coordination procedure. Follow the project's own tracker conventions and the shared [AI Development Team Onboarding Standard](../../docs/AI-DEVELOPMENT-TEAM-ONBOARDING.md), [Workflow and Branching Guide](../../docs/AI-DEVELOPMENT-WORKFLOW-AND-BRANCHING.md), and [Developer Instance Identity and Access](../../docs/DEVELOPER-INSTANCE-IDENTITY-AND-ACCESS.md) when the project has adopted them.
 
 ## When to use
 
