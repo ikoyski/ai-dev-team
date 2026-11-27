@@ -23,7 +23,7 @@ Use when assigned as QA for work implemented by another contributor. The QA revi
 
 ## Procedure
 
-1. **Confirm independence.** Verify that you did not implement the change and that the exact revision is identified.
+1. **Confirm independence.** Verify that you did not implement the change and that the exact revision is identified. When working as an AI developer, record your own DevN ID and the implementer's DevN ID; they must be different. Confirm that you are operating with your own workspace and credentials. A different tool name alone does not prove an independent reviewer identity.
 2. **Read expected behavior.** Review the task, acceptance criteria, constraints, and relevant decisions before judging the implementation.
 3. **Inspect the actual change.** Read the complete relevant diff and surrounding code. Do not rely solely on the developer's report.
 4. **Build a verification matrix.** Map each acceptance criterion to evidence, test cases, or an explicit reason it cannot be verified.
@@ -39,6 +39,8 @@ Use when assigned as QA for work implemented by another contributor. The QA revi
 A QA report containing:
 - Result: PASS / FAIL / NEEDS CLARIFICATION.
 - Task, repository, and exact revision.
+- Developer DevN and QA reviewer DevN (when AI developer instances are involved).
+- Actual GitHub user/App actor where relevant.
 - Acceptance criteria and verification outcomes.
 - Findings using the shared severity scale in the [Onboarding Standard §11](../../docs/AI-DEVELOPMENT-TEAM-ONBOARDING.md#11-qa-severity-and-outcomes), with precise location, evidence, and recommended correction.
 - Tests/checks executed and actual results.
@@ -47,7 +49,7 @@ A QA report containing:
 
 ## Verification
 
-- QA is independent of implementation.
+- QA is independent of implementation; the QA DevN ID differs from the implementing DevN ID.
 - The actual source change is inspected.
 - Every acceptance criterion is accounted for.
 - Findings are actionable and evidence-based.
