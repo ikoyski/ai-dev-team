@@ -105,28 +105,29 @@ The QA reviewer must differ from the implementation owner. QA is initially read-
 
 The senior reviewer should be independent of the implementation. If the reviewer authored the change, another qualified reviewer must perform this review.
 
+See [Developer Instance Identity and Access](DEVELOPER-INSTANCE-IDENTITY-AND-ACCESS.md) for the scalable DevN identity, account, OAuth-client, workspace-isolation, and attribution standard.
+
 ### Current role allocation
 
 This is the current roster, not a fixed team size or a permanent assignment of roles to products:
 
 | Participant | Current role | Current access constraint |
 |---|---|---|
-| Human Team Lead | Product direction, prioritization, final approval | Human-controlled; uses the separate human Kanban/GitHub identity |
-| ChatGPT.com | Chief Architect / Senior Technical Reviewer; can implement selected changes | Use only explicitly connected repository and tool access |
-| Claude.ai | Project Coordinator | Uses its own configured Kanban access; verify repository and deployment access before assigning those actions |
-| Dev1 — Claude Code | Developer / independent QA reviewer | Uses its own Google/SSO and Kanban user identity with MCP client ID `kanban-claude`; OpenRouter is an optional model/provider route |
-| Dev2 — Antigravity | Developer / independent QA reviewer | Uses its own Google/SSO and Kanban user identity with MCP client ID `kanban-antigravity` |
-| Dev3 … DevN — additional instances | Developer / independent QA reviewer | Onboard each independent instance with a new stable DevN ID and its own identity/access mapping; no fixed maximum |
+| Human Team Lead | Product direction, prioritization, final approval | Uses a separate human Kanban/GitHub identity; retains human-only approval authority |
+| ChatGPT | Chief Architect / Senior Technical Reviewer; may own architecture tasks or implement selected changes | Use only explicitly connected repository and tool access; attribute work to ChatGPT, never another participant |
+| Claude.ai | Project Coordinator | Uses its own configured Kanban identity; verify repository and deployment access before assigning those actions |
+| Dev1 — Claude Code | Developer / independent QA reviewer | Own distinct authenticated Kanban user; current MCP client type `kanban-claude`; OpenRouter is an optional model/provider route |
+| Dev2 — Antigravity | Developer / independent QA reviewer | Own distinct authenticated Kanban user; current MCP client type `kanban-antigravity` |
+| DevN — future instances | Developer / independent QA reviewer | Each instance receives its own stable DevN identity and authenticated Kanban user; OAuth client IDs may be shared by application/harness type, but user identities, tokens, and sessions remain separate |
 
-Initial cross-QA pairing:
-- Dev1 (Claude Code) implementation → Dev2 (Antigravity) QA.
-- Dev2 (Antigravity) implementation → Dev1 (Claude Code) QA.
+Default cross-QA:
+
+- Dev1 (Claude Code) implementation → Dev2 (Antigravity) as independent QA.
+- Dev2 (Antigravity) implementation → Dev1 (Claude Code) as independent QA.
+- Future DevN assignments follow the same rule: the QA reviewer must be a different authenticated developer instance from the implementation owner.
+- ChatGPT architecture/review work must be attributed to ChatGPT; when independent QA is required, assign a DevN reviewer without recording ChatGPT's work under that DevN identity.
 
 When additional DevN instances are onboarded, the coordinator assigns a different active developer instance as QA based on skills, capacity, access, and independence. Do not assign an instance to QA its own work. A different tool/provider is preferred for higher-risk changes when practical, but the DevN identity must remain distinct even when two instances use the same tool.
-
-See [Developer Instance Identity and Access](DEVELOPER-INSTANCE-IDENTITY-AND-ACCESS.md) for the open-ended DevN roster, per-instance account/credential isolation, OAuth client reuse, GitHub attribution, and onboarding/offboarding rules.
-
-Verify access before assigning work. Never assume one environment inherits another environment's tools, credentials, or permissions. Record the actual model/provider route when relevant.
 
 ## 3. Decision rights and task accountability
 
@@ -349,11 +350,11 @@ Current limitations:
 - Verify available MCP operations before promising an action; do not assume unsupported operations such as deletion, column reordering, or membership administration are available through MCP.
 
 Suggested assignment labels:
-- dev:dev1, dev:dev2, … dev:devN — identifies the specific primary developer instance.
-- qa:dev1, qa:dev2, … qa:devN — identifies the specific independent QA instance.
-- agent:antigravity, agent:claude-code, agent:chatgpt — optional tool-family/participant classification; these do not replace the DevN identity.
-
-Use the project's native owner/reviewer fields when available. Where those fields are unavailable, use the DevN labels or a documented structured card description. Labels are descriptive metadata and do not grant permissions.
+- agent:antigravity
+- agent:claude-code
+- agent:chatgpt (only when ChatGPT owns implementation)
+- qa:antigravity
+- qa:claude-code
 
 Suggested type labels:
 - type:feature
