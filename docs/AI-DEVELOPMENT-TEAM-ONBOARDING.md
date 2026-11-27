@@ -351,11 +351,10 @@ Current limitations:
 - Verify available MCP operations before promising an action; do not assume unsupported operations such as deletion, column reordering, or membership administration are available through MCP.
 
 Suggested assignment labels:
-- agent:antigravity
-- agent:claude-code
-- agent:chatgpt (only when ChatGPT owns implementation)
-- qa:antigravity
-- qa:claude-code
+- dev:dev1, dev:dev2, ... dev:devN (stable developer-instance identity)
+- qa:dev1, qa:dev2, ... qa:devN (must identify a different instance from the developer)
+- agent:claude-code, agent:antigravity, etc. may be used as supplemental tool-family labels, not as identity or assignment substitutes
+- architect:chatgpt (optional attribution label; ChatGPT is not a DevN)
 
 Suggested type labels:
 - type:feature
