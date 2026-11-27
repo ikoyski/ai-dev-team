@@ -419,8 +419,8 @@ Task 1 must inspect the actual `kanban`, backend, MCP, and authentication-servic
 
 ## 17. Approval
 
-- **Team Lead decision:** Pending — Approved / Changes requested / Rejected
-- **Approved by:** <human approver>
-- **Date:** <YYYY-MM-DD>
-- **Approved revision/commit:** <commit SHA or link>
-- **Notes:** This document is a proposed requirements baseline. Claude.ai may review it and prepare Backlog cards, but implementation cards must not enter Ready until the Team Lead approves the requirements and task prerequisites are satisfied.
+- **Team Lead decision:** Approved
+- **Approved by:** Human Team Lead
+- **Date:** 2026-11-27
+- **Approved revision/commit:** [`c850fc38e4684fa2d177bae60ab68197bbdfc70b`](https://github.com/ikoyski/ai-dev-team/commit/c850fc38e4684fa2d177bae60ab68197bbdfc70b)
+- **Notes:** The Human Team Lead approves this requirements baseline as written at the specified commit. This approval applies to `requirements.md` at that exact revision. Subsequent changes to the requirements require a new review and approval. Claude.ai may proceed with reviewing the task breakdown and preparing Backlog cards. Implementation cards must not enter Ready until their individual ownership, QA assignment, dependencies, and other required prerequisites are satisfied.
