@@ -11,10 +11,10 @@
 - **Prepared by:** ChatGPT — Chief Architect / Requirements Author
 - **Product owner:** Human Team Lead
 - **Created:** 2026-11-26
-- **Last updated:** 2026-11-26
+- **Last updated:** 2026-11-27
 - **Related Kanban cards:** To be created by Claude.ai after this plan is reviewed
 - **Related PRs:** None
-- **Related architecture decisions:** Preserve the existing workflow states; project context by default; human retains final acceptance and release authority.
+- **Related architecture decisions:** Preserve the existing workflow states; use a per-board opt-in development workflow profile; keep human merge, test-acceptance, and production-promotion decisions restricted to the authenticated Team Lead acting through the Kanban web application; bind review and acceptance evidence to exact PR-head revisions; deliver the manual workflow MVP before optional summaries and filters.
 
 ## 1. Problem statement
 
@@ -71,11 +71,11 @@ Any active state may become Blocked and return to the appropriate state when res
 The meanings of the important review stages are:
 1. Developer implements on a feature branch created from the latest `develop`, pushes commits, and opens a PR targeting `develop`.
 2. A different agent independently performs QA against the approved requirements and actual PR/commit.
-3. ChatGPT performs senior technical review after independent QA passes.
-4. Only the Human Team Lead authorizes the specific PR merge into `develop`.
+3. ChatGPT performs senior technical review after independent QA passes. Both QA and senior-review evidence identify the exact PR head commit SHA reviewed.
+4. Only the Human Team Lead, using the authenticated human account through the Kanban web application, may authorize merging a specific PR into `develop`. This decision cannot be created, changed, or reversed through MCP, including when an MCP caller supplies a Team Lead name or other attribution metadata.
 5. The test environment is deployed from the resulting `develop` commit and the Team Lead performs manual acceptance testing.
-6. After acceptance, the card may move to Ready to Merge. The Team Lead separately authorizes production promotion to `master`.
-7. Done means the authorized production release and required verification are complete.
+6. The Team Lead records ACCEPTED or REJECTED for the exact tested revision through the web application. After acceptance, the card may move to Ready to Merge.
+7. The Team Lead separately authorizes production promotion to `master` through the web application. Done means the authorized production release and required verification are complete.
 
 The application must not reinterpret these states or weaken the team's Git and release controls.
 
@@ -93,7 +93,7 @@ Cards should support structured delivery metadata in addition to their existing 
 - Test deployment environment/URL and deployed commit reference when applicable.
 - Explicit review and acceptance checkpoint outcomes.
 
-Participant assignment is responsibility metadata, not a grant of application access. A developer or QA participant may be a person or an AI agent. Board membership and Owner/Editor/Viewer permissions remain separate and authoritative for access.
+Participant assignment is responsibility metadata, not a grant of application access. Active DevN instances in the team's developer roster must map to their own distinct authenticated Kanban user identities so actions can be attributed to the correct developer; an agent/client label alone is not an identity. The catalog may also represent human or external contributors who do not sign in, where appropriate. Board membership and Owner/Editor/Viewer permissions remain separate and authoritative for access.
 
 ### 4.2 Review and handoff tracking without extra columns
 
@@ -104,7 +104,7 @@ Keep the existing workflow columns/states. Within In Review, show the current ch
 - Awaiting test deployment / test deployment verified.
 - Awaiting Team Lead acceptance / accepted / rejected.
 
-Represent each handoff as an attributable activity entry with a timestamp, checkpoint, outcome, summary, and relevant evidence links. A normal comment should remain available for discussion; structured handoff entries should make important transitions easy to scan and query.
+Represent each handoff as an attributable activity entry with a timestamp, checkpoint, outcome, summary, and relevant evidence links. A normal comment should remain available for discussion; structured handoff entries should make important transitions easy to scan and query. Workflow evidence must identify the exact PR head SHA to which it applies. When that SHA changes, prior evidence remains historical and must not automatically satisfy gates for the new revision.
 
 ### 4.3 GitHub and deployment traceability
 
@@ -124,8 +124,11 @@ Do not imply that a PR is merged, a deployment succeeded, or a release is comple
 
 Expose the new structured card fields, dependency relationships, and handoff/checkpoint operations through the separate Kanban MCP service where appropriate. MCP tools must continue to act through the authenticated user's existing permissions and backend authorization.
 
-AI agents should be able to report their own coordination actions only after the operation is confirmed by the API. The system should distinguish:
+AI agents should be able to perform ordinary coordination and implementation-workflow operations only after the operation is confirmed by the API. MCP may read human decisions and may perform permitted routine updates, but it must not create, edit, or reverse: (a) Team Lead authorization to merge a PR into `develop`, (b) Team Lead ACCEPTED/REJECTED test decisions, or (c) Team Lead authorization for production promotion. Those decision actions are available only through the Kanban web application to the authenticated Team Lead account. The backend must enforce this restriction using trusted authentication/client context; UI hiding and caller-supplied labels are not sufficient.
+
+The system should distinguish:
 - The authenticated account that performed the API operation.
+- The authenticated OAuth client/application context through which the operation was made.
 - Optional client/agent attribution supplied for operational context.
 - The person or agent assigned responsibility for the work.
 
@@ -138,7 +141,7 @@ Client-supplied agent labels are descriptive metadata, not proof of identity. Do
 1. **FR-1 — Work item type:** A card shall support a configurable or predefined work item type while preserving existing card behavior and data.
 2. **FR-2 — Developer assignment:** A card shall identify one primary developer responsible for implementation.
 3. **FR-3 — Independent QA assignment:** A card shall identify one QA reviewer. The application shall flag or prevent the same participant from being assigned as both developer and independent QA for the same card.
-4. **FR-4 — Participant catalog:** The application shall support selecting human and AI participants as responsibility labels without requiring every AI participant to have a Kanban login or board membership. The design shall avoid conflating assignment with authorization.
+4. **FR-4 — Participant catalog:** The application shall support a participant catalog for assigning human and AI contributors. Each active DevN instance in the team's developer roster shall map to its own distinct authenticated Kanban user identity for reliable actor attribution. The catalog may also represent external/non-login contributors where appropriate. Participant assignment shall not itself grant board access or permissions; authentication and board membership remain separate.
 5. **FR-5 — Requirement traceability:** A card shall store a link to its authoritative requirements document and allow references to requirement IDs and acceptance-criteria IDs.
 6. **FR-6 — Acceptance criteria:** A card shall support a structured, checkable list of task-level acceptance criteria, with completion state and optional evidence/comment.
 7. **FR-7 — Dependencies:** A card shall support links to prerequisite/blocking cards and display both its blockers and the cards it blocks. The system shall prevent self-dependencies and detect or reject dependency cycles.
@@ -149,10 +152,10 @@ Client-supplied agent labels are descriptive metadata, not proof of identity. Do
 9. **FR-9 — Review checkpoint:** A card in In Review shall record its current review/deployment checkpoint without requiring additional workflow columns.
 10. **FR-10 — QA outcome:** The assigned independent QA reviewer shall be able to record PASS or FAIL against a specific PR/commit, including checks performed, findings, limitations, and evidence links.
 11. **FR-11 — Senior review outcome:** The card shall record the senior review outcome and the exact revision reviewed. A PASS shall not itself authorize a merge.
-12. **FR-12 — Team Lead authorization:** The card shall distinguish a Team Lead's explicit authorization to merge a specific PR into `develop` from AI review results and general comments.
+12. **FR-12 — Team Lead authorization:** The card shall distinguish a Team Lead's explicit authorization to merge a specific PR into `develop` from AI review results and general comments. The authorization decision may be created, changed, or reversed only by the authenticated Team Lead through the Kanban web application. MCP clients shall not have a tool or mutation path for this decision.
 13. **FR-13 — Test deployment evidence:** The card shall record the test environment, deployed commit SHA, deployment time/result, and verification evidence where applicable.
-14. **FR-14 — Human acceptance:** The Team Lead shall be able to record ACCEPTED or REJECTED against the tested revision, with notes and evidence. Only an accepted test result may qualify the card for Ready to Merge.
-15. **FR-15 — Production release evidence:** The card shall record the production release reference and verification evidence before it is considered Done, in accordance with the project's release policy.
+14. **FR-14 — Human acceptance:** The Team Lead shall be able to record ACCEPTED or REJECTED against the tested revision, with notes and evidence, only through the Kanban web application while authenticated as the Team Lead. MCP clients shall not be able to create, change, or reverse this decision. Only an accepted test result for the current eligible revision may qualify the card for Ready to Merge.
+15. **FR-15 — Production release evidence and authorization:** The card shall record the Team Lead's explicit production-promotion authorization, the production release reference, and verification evidence before it is considered Done. The authorization decision shall be recorded only through the Kanban web application by the authenticated Team Lead; MCP may read the decision and may record permitted non-authoritative delivery evidence but shall not create or alter the authorization.
 16. **FR-16 — Structured handoff:** A participant shall be able to record a handoff containing the sender, intended recipient/role, checkpoint, summary, requested next action, outcome, and supporting links. The system shall retain the handoff in the card's activity history.
 17. **FR-17 — Revision cycle:** When a review fails or changes are requested, the card shall record findings and return to the original developer for correction. Subsequent review evidence shall identify the new PR/commit revision.
 18. **FR-18 — Activity history:** The card shall provide a chronological, append-oriented history of important events, including status changes, assignments, dependency changes, review outcomes, handoffs, approval decisions, and recorded deployment/release evidence.
@@ -169,16 +172,16 @@ Client-supplied agent labels are descriptive metadata, not proof of identity. Do
 23. **FR-23 — In Review validation:** The application shall require a reviewable implementation reference (normally a PR targeting `develop`) before a task enters In Review, while allowing documented exceptions for task types that do not produce code.
 24. **FR-24 — Ready to Merge validation:** A code task shall not qualify for Ready to Merge until independent QA and senior review have passed, the Team Lead's test-integration authorization is recorded, the relevant test deployment is verified, and human acceptance is recorded for that tested revision.
 25. **FR-25 — Done validation:** A code task shall not qualify for Done until the separately authorized production promotion and required production verification are recorded. Non-code task types may use an appropriate completion rule.
-26. **FR-26 — MCP parity:** Supported MCP operations shall be able to read and update the new structured fields and record handoffs/checkpoints, subject to the same backend authorization and validation rules as the web application.
+26. **FR-26 — MCP workflow support:** Supported MCP operations shall be able to read and update permitted structured work fields, dependencies, developer/QA assignments, handoffs, and non-human review/checkpoint evidence, subject to backend authorization and validation. MCP shall be able to read human approval decisions but shall not create, change, or reverse Team Lead merge authorization, human test acceptance/rejection, or production-promotion authorization.
 27. **FR-27 — Confirmed operations:** MCP responses and agent handoffs shall reflect the actual API result. Failed, rejected, or unconfirmed writes must not be reported as successful.
-28. **FR-28 — Existing permissions:** All new web and MCP operations shall enforce the existing board roles and server-side authorization. UI-only restrictions are insufficient.
+28. **FR-28 — Existing permissions and human-only decision enforcement:** All new web and MCP operations shall enforce existing board roles and server-side authorization. The backend shall additionally restrict Team Lead merge authorization, human test acceptance/rejection, and production-promotion authorization to the authenticated Team Lead acting through the Kanban web application. Requests through MCP clients shall be rejected for these decision mutations even if the caller supplies Team Lead attribution data. UI-only restrictions are insufficient.
 29. **FR-29 — General-purpose operation:** The features shall remain usable for ordinary Kanban projects. AI-specific participants and review checkpoints shall be optional unless a board explicitly enables the development workflow profile.
 
 ### E. Usability and administration
 
 30. **FR-30 — Workflow profile:** A board owner shall be able to enable a software-development workflow profile that exposes the relevant fields and validation rules while leaving ordinary boards lightweight.
-31. **FR-31 — Card summary:** Card list views shall provide a compact indication of owner, QA reviewer, blockers, current review checkpoint, and key delivery status without making cards visually overwhelming.
-32. **FR-32 — Search and filtering:** Users shall be able to filter/search cards by developer, QA reviewer, work item type, dependency/blocker status, review checkpoint, and relevant delivery status.
+31. **FR-31 — Card summary (Phase 2):** Card list views should provide a compact indication of owner, QA reviewer, blockers, current review checkpoint, and key delivery status without making cards visually overwhelming. This is deferred from the Phase 1 pilot.
+32. **FR-32 — Search and filtering (Phase 2):** Users should be able to filter/search cards by developer, QA reviewer, work item type, dependency/blocker status, review checkpoint, and relevant delivery status. This is deferred from the Phase 1 pilot.
 33. **FR-33 — Responsive experience:** New fields and checkpoint/history views shall remain usable on mobile and desktop.
 34. **FR-34 — Import/export:** Board JSON export/import shall preserve new structured fields and relationships, with validation and safe handling of unknown or older fields.
 
@@ -188,19 +191,20 @@ Client-supplied agent labels are descriptive metadata, not proof of identity. Do
 - **NFR-2 — Authorization:** Backend authorization remains authoritative for web and MCP requests. No new field or workflow profile may bypass Owner/Editor/Viewer permissions.
 - **NFR-3 — Audit integrity:** Important history events shall not be silently overwritten as ordinary editable comments. Corrections should be represented by subsequent events or an explicitly audited correction mechanism.
 - **NFR-4 — Attribution:** Store the authenticated actor and timestamp for system-recorded actions. Optional agent/client attribution must be clearly marked as unverified descriptive metadata unless independently authenticated.
-- **NFR-5 — Data integrity:** Dependency relationships shall be validated for existence, board boundaries, self-reference, and cycles. Review/acceptance evidence shall reference the relevant revision.
+- **NFR-5 — Data integrity:** Dependency relationships shall be validated for existence, board boundaries, self-reference, and cycles. QA, senior-review, deployment, human-acceptance, and release evidence shall reference the exact PR head SHA or deployed revision to which it applies. A changed revision invalidates prior gate evidence by default; a documented mechanical-rebase delta-check may issue fresh QA evidence for the new SHA as defined in the technical design.
 - **NFR-6 — Security:** Validate and safely render all user- and agent-supplied text/URLs. Continue using the existing rich-text sanitization boundary. Do not store access tokens, OAuth secrets, or other credentials in card metadata or activity entries.
 - **NFR-7 — Reliability:** Failed writes must leave the user with a clear error and must not display optimistic success as confirmed completion. Preserve retry-safe behavior.
 - **NFR-8 — Performance:** Board loading and card rendering must remain responsive for boards with substantially more activity and relationship metadata than today. Avoid loading an unbounded full audit history for every card in the board view.
 - **NFR-9 — Maintainability:** Keep frontend, backend, and MCP responsibilities in their existing service boundaries. Prefer explicit API contracts and focused modules over duplicating workflow rules across clients.
 - **NFR-10 — Accessibility:** New controls, status indicators, dialogs, and history views shall support keyboard navigation and accessible labels/announcements.
 - **NFR-11 — Provider neutrality:** Do not hard-code behavior to Claude, ChatGPT, Gemini, Antigravity, or a specific model provider. Participant names and integrations should be configurable and provider-neutral.
+- **NFR-12 — Revision-bound QA evidence:** Every QA outcome shall identify the exact PR head SHA tested. A changed SHA makes the previous QA result stale by default. Only an independently performed and documented mechanical-rebase delta-check may establish a fresh PASS for the new SHA without repeating the full QA suite.
 
 ## 7. Scope
 
-### In scope
+### In scope — Phase 1 pilot
 
-- A board-level software-development workflow profile.
+- A per-board, opt-in software-development workflow profile.
 - Structured developer and independent QA assignments.
 - Requirement and acceptance-criteria references.
 - Task acceptance criteria and dependencies.
@@ -211,6 +215,11 @@ Client-supplied agent labels are descriptive metadata, not proof of identity. Do
 - Web UI, backend/API, and Kanban MCP support for the agreed features.
 - Board import/export compatibility and regression tests.
 - A pilot using this Kanban improvement project and subsequent real AI-team tasks.
+
+### Deferred to Phase 2
+
+- FR-31 compact workflow-aware card-list summaries.
+- FR-32 dedicated workflow filters for developer, QA reviewer, work type, dependency/blocker, checkpoint, and delivery status.
 
 ### Out of scope
 
@@ -239,6 +248,8 @@ This section sets architectural constraints, not a prescriptive implementation. 
 8. **Migration:** Existing cards should receive safe defaults (for example, no workflow profile and empty optional metadata). Avoid destructive resets or requiring users to recreate boards/cards.
 9. **Incremental delivery:** Deliver a useful manual-tracking MVP first. Add source-system synchronization only after the underlying workflow data model and manual process are proven.
 10. **No premature automation:** A manually recorded Team Lead decision is an auditable workflow record, not an automatic GitHub permission or merge action. Any future integration must still respect GitHub branch protections and the explicit authorization model.
+11. **Human decision channel:** Merge authorization, test ACCEPTED/REJECTED, and production-promotion authorization are web-application-only decisions. The backend must distinguish the trusted web client context from MCP clients and reject these mutations from MCP regardless of caller-supplied identity or agent metadata.
+12. **Revision and rebase policy:** The PR head SHA is the authoritative identifier for QA and review evidence. Any SHA change invalidates prior evidence by default. A delta-check is permitted only for a mechanical, conflict-free rebase where the effective PR patch is demonstrably unchanged, no conflict resolution or other step changes the implementation or contract, and relevant CI checks pass. The independent QA reviewer must document the old and new SHAs, the comparison performed, affected checks rerun, and issue a fresh QA result bound to the new SHA. If the effective patch changes, shared contracts/hot files are affected, or equivalence is uncertain, full QA is required.
 
 ## 9. Security and privacy considerations
 
@@ -250,17 +261,46 @@ This section sets architectural constraints, not a prescriptive implementation. 
 - Prevent stored XSS through safe rendering and URL validation; continue sanitizing rich-text content.
 - Avoid storing secrets, bearer tokens, environment variables, or sensitive deployment configuration in cards, comments, or handoff records.
 - Consider abuse cases where an AI client attempts to mark its own QA as passed, impersonate the Team Lead, fabricate deployment evidence, or move a card past a gate. Server-side rules and audit attribution must prevent an untrusted client assertion from becoming privileged authorization.
+- The backend must reject MCP attempts to create or alter Team Lead merge authorization, test acceptance/rejection, or production-promotion authorization. These are restricted by authenticated human actor and trusted web-client context, not by a participant name or UI-only control.
 - The Team Lead's approval must be attributable to the authenticated human account and explicit action. AI review results are advisory and must never be accepted as human approval.
 
 ## 10. Dependencies and sequencing
 
-1. Inspect current backend schema/API, frontend card state/rendering, and MCP tool contracts.
-2. Agree on the workflow-profile, participant, dependency, checkpoint, and activity data model before parallel implementation.
-3. Implement backend persistence, validation, and authorization before exposing mutations through frontend and MCP.
-4. Add frontend card editing, summaries, filters, history, and transition guidance against the agreed API.
-5. Add MCP read/write support after the backend contract is stable.
-6. Add import/export compatibility and automated regression tests.
-7. Deploy to the test environment and use the Team Lead's acceptance process before any production promotion.
+### Wave 0 — Architecture and contract freeze (Task 1; sequential)
+
+1. Inspect the actual frontend, backend, database migrations, API contracts, and MCP tools; confirm the proposed repository/service split rather than relying on assumptions.
+2. Resolve the technical design for task-level acceptance criteria (dedicated entity versus structured card field), the participant catalog (including the team's DevN authenticated identity model), and the minimum checkpoint types.
+3. Define the per-board workflow-profile configuration, dependency and activity models, revision-bound evidence, human-only web decision operations, and MCP read/write boundaries.
+4. Publish the API contract, MCP tool signatures, migration/version allocation plan, dependency graph, task-level acceptance criteria, and file-ownership map. Identify hot files and specify which task owns each one.
+5. Claude.ai reviews the design. No implementation begins until the contract and ownership map are stable.
+
+### Wave 1 — Backend foundation (Tasks 2 and 3; sequential integration)
+
+6. Implement persistence and additive migrations, then server-side workflow validation and authorization. Use one primary writer for shared backend hot files and merge one PR at a time where changes overlap. Do not start a dependent task from an unmerged branch that changes the same contract or files.
+7. Implement and test the trusted web-client/Team Lead restriction for protected approval decisions before exposing those actions in the UI or MCP.
+
+### Wave 2 — Client and transfer capabilities (after backend contract is merged to develop/test)
+
+8. Implement frontend workflow editing, checkpoints, history, and GitHub/deployment references against the frozen contract. Keep task-level UI acceptance criteria and tests within each implementation card.
+9. Implement MCP read/write support only for the permitted operations; protected human decisions are readable but not mutable through MCP.
+10. Implement Phase 1 import/export compatibility, including preservation of all newly supported fields and relationships. FR-31 and FR-32 are deferred to Phase 2.
+11. Parallel work is allowed only when file ownership and dependency boundaries show no overlapping writers. Review each PR's touched-file list against other open PRs and integrate shared-repository changes one PR at a time.
+
+### Wave 3 — Cross-cutting verification and pilot (Tasks 9 and 10)
+
+12. Task 9 focuses on cross-cutting security, authorization, migration/integration regression, end-to-end workflow, and release-gate verification. It must not be used as a substitute for feature-level tests and acceptance criteria in Tasks 2–8.
+13. Deploy the accepted `develop` revision to the test environment, then run the pilot. Human acceptance and production-promotion decisions remain separate Team Lead actions.
+
+### Conflict and QA evidence controls
+
+- One active writer per hot file. The Wave 0 ownership map must identify owners for shared UI entry points, card modal/rendering code, backend card/entity/DTO/service/controller/auth files, MCP tool declarations, and migration versions.
+- Reserve additive Flyway migration versions in the technical plan; only the assigned backend migration owner may add or reorder migrations.
+- Keep separate clones/worktrees and isolated runtime/test data where parallel agents could otherwise collide. Do not share mutable working directories or databases for concurrent migration work.
+- Before opening/merging a PR, provide `git diff --name-only develop...HEAD`; compare it with all open PRs for overlapping paths and semantic/API dependencies.
+- Do not branch a task from another unmerged feature branch by default. If a stacked dependency is unavoidable, document it explicitly and rebase/test after the prerequisite merges.
+- Merge overlapping work into `develop` one PR at a time. Rebase against the latest `develop`, run CI, and perform the required QA evidence refresh before the Team Lead authorizes the merge.
+- QA evidence is keyed to the exact PR head SHA. Full re-QA is the default after a SHA change. Only the documented mechanical-rebase exception permits an independent delta-check and fresh QA attestation for the new SHA.
+- Keep the developer and QA reviewer different for every implementation card. A rebase delta-check is performed by the independent QA reviewer, not the developer.
 
 The project must not enter Ready for implementation until the Team Lead approves this requirements revision, the architecture/data model is reviewed, and task dependencies/ownership are clear.
 
@@ -275,17 +315,19 @@ The project must not enter Ready for implementation until the Team Lead approves
 - [ ] **AC-7:** A Blocked card visibly records why it is blocked, who owns the next action, and what will unblock it.
 - [ ] **AC-8:** In Review can show the current QA/review/deployment checkpoint without adding mandatory workflow columns.
 - [ ] **AC-9:** QA and senior review outcomes identify the exact PR/commit reviewed and include a summary plus evidence/findings.
-- [ ] **AC-10:** A Team Lead authorization to merge a specific PR into `develop` is recorded distinctly from reviewer PASS results.
+- [ ] **AC-10:** A Team Lead authorization to merge a specific PR into `develop` is recorded distinctly from reviewer PASS results, and the backend accepts that decision only from the authenticated Team Lead through the Kanban web application; equivalent MCP mutations are rejected.
 - [ ] **AC-11:** Test deployment evidence identifies the deployed commit, environment, and verification result.
-- [ ] **AC-12:** Human acceptance is recorded against the tested revision. Rejected or stale acceptance evidence cannot qualify a newer revision for Ready to Merge.
-- [ ] **AC-13:** Production promotion and verification evidence are recorded separately; Kanban does not perform an unauthorized merge or deployment.
+- [ ] **AC-12:** Human acceptance is recorded against the tested revision through the web application by the authenticated Team Lead. Rejected or stale acceptance evidence cannot qualify a newer revision for Ready to Merge, and MCP mutations attempting to create or alter the decision are rejected.
+- [ ] **AC-13:** Production-promotion authorization, release evidence, and verification are recorded separately. Only the authenticated Team Lead through the web application can record the authorization; MCP cannot create or alter it. Kanban does not perform an unauthorized merge or deployment.
 - [ ] **AC-14:** Important assignment, status, checkpoint, handoff, approval, and deployment events appear in chronological activity history with authenticated actor and timestamp.
 - [ ] **AC-15:** Web and MCP operations enforce the same backend permissions and validation rules.
 - [ ] **AC-16:** MCP reports a write as successful only after the backend confirms it; errors and permission denials are surfaced accurately.
 - [ ] **AC-17:** Board JSON export/import preserves all new supported metadata and relationships, with backward compatibility for older exports.
-- [ ] **AC-18:** Users can filter by developer, QA reviewer, work type, blocker/dependency, and checkpoint.
+- [ ] **AC-18 (Phase 2):** Users can filter by developer, QA reviewer, work type, blocker/dependency, and checkpoint.
 - [ ] **AC-19:** Automated tests cover backend validation/authorization, frontend behavior, MCP operations, migrations, and relevant regression paths.
 - [ ] **AC-20:** The pilot completes at least one end-to-end task through requirement linkage, assignment, implementation, independent QA, senior review, test integration, human acceptance, and separately authorized production release, with evidence recorded on the cards.
+- [ ] **AC-21:** QA PASS evidence is bound to an exact PR head SHA. A changed SHA invalidates the prior QA gate by default; a mechanical-rebase exception is accepted only when an independent QA reviewer documents patch equivalence, old/new SHAs, required CI reruns, and a fresh result for the new SHA. Any behavioral, API/contract, or uncertain change requires full QA.
+- [ ] **AC-22:** MCP can read the Team Lead's merge, test-acceptance, and production-promotion decisions but cannot create, edit, or reverse them. Backend authorization rejects these operations from MCP clients even when the request supplies Team Lead identity or agent attribution fields.
 
 ## 12. Testing requirements
 
@@ -296,7 +338,9 @@ The project must not enter Ready for implementation until the Team Lead approves
 - **MCP tests:** verify new read/write tools and parameters; permission denial; invalid transitions; failed writes; accurate confirmation; authenticated actor attribution; no privilege escalation from participant labels.
 - **Security tests:** stored XSS and unsafe URLs; unauthorized cross-board access; attempts to impersonate Team Lead approval; attempts to self-approve QA; attempts to bypass transition validation.
 - **End-to-end pilot:** use a non-production board and test deployment. Preserve evidence for each checkpoint and verify the deployed commit matches the accepted revision.
-- **Evidence:** PRs should include test commands/results, relevant CI links, migration notes, and screenshots or traces for meaningful UI flows. QA reports must state exact PR/commit reviewed and any unverified areas.
+- **Evidence:** PRs should include test commands/results, relevant CI links, migration notes, and screenshots or traces for meaningful UI flows. QA reports must state exact PR head SHA reviewed and any unverified areas.
+- **Revision/rebase tests:** Verify that QA evidence for an earlier SHA cannot satisfy a gate for a newer SHA. Test the mechanical-rebase delta-check path, including recorded old/new SHAs, patch-equivalence evidence, rerun checks, and fresh QA attestation; verify that changed effective patches require full QA.
+- **Human decision-channel tests:** Verify that authenticated Team Lead web actions can record the three protected decisions, while MCP requests cannot create, change, or reverse them, including requests that spoof Team Lead names, participant IDs, or client attribution.
 
 Do not use production credentials or live production data in automated tests.
 
@@ -319,13 +363,13 @@ Claude.ai should review this plan, identify sensible task boundaries, dependenci
 | 1. Architecture and data model | Inspect frontend/backend/MCP; define workflow profile, participant references, dependencies, checkpoints, activity events, revision-aware evidence, and API contracts. Produce a reviewed technical design. | First; blocks implementation |
 | 2. Backend persistence and migrations | Add backward-compatible persistence for workflow profile and structured card metadata, participants, dependencies, and activity records. | After task 1 |
 | 3. Backend workflow rules and authorization | Implement server-side validation for assignments, dependencies, state gates, review/acceptance evidence, and role enforcement. | After/alongside task 2 |
-| 4. Frontend card workflow experience | Add workflow profile settings, structured card fields, criteria, dependencies, checkpoint display, handoffs, history, and delivery references. | After API contract stabilizes |
-| 5. GitHub/deployment reference UX | Add explicit repository/branch/PR/commit and deployment references, distinguishing manual records from verified integration data. | Alongside task 4 |
-| 6. MCP workflow support | Extend MCP read/write operations for supported fields, dependencies, checkpoints, and handoffs; verify permissions and confirmed outcomes. | After backend contract |
-| 7. Search, filters, and board summaries | Add workflow-aware filters and compact card indicators while preserving existing board usability. | After core UI |
-| 8. Import/export and compatibility | Preserve new metadata in JSON transfer and validate older imports/exports. | After data model |
-| 9. Automated regression and security tests | Add backend, migration, frontend, MCP, authorization, XSS, and transition-gate coverage. | Throughout; final verification |
-| 10. Pilot deployment and workflow validation | Deploy to test, run a real AI-team task through the full lifecycle, record evidence, collect feedback, and resolve pilot gaps. | After implementation and QA |
+| 4. Frontend card workflow experience | Add workflow profile settings, structured card fields, criteria, dependencies, checkpoint display, handoffs, history, and delivery references. Include feature-level tests and acceptance criteria. | Wave 2, after API contract stabilizes |
+| 5. GitHub/deployment reference UX | Add explicit repository/branch/PR/commit and deployment references, distinguishing manual records from verified integration data. Include feature-level tests and acceptance criteria. | Wave 2, alongside Task 4 only where file ownership permits |
+| 6. MCP workflow support | Extend MCP read/write operations for permitted fields, dependencies, checkpoints, and handoffs; expose human decisions read-only and verify protected mutations are rejected. Include tool-level tests. | Wave 2, after backend contract |
+| 7. Search, filters, and board summaries | Deliver FR-31 summaries and FR-32 workflow filters. | Phase 2, after the Phase 1 pilot |
+| 8. Import/export and compatibility | Preserve all new Phase 1 metadata and relationships in JSON transfer and validate older imports/exports. Include migration/import regression tests. | Wave 2, after data model |
+| 9. Cross-cutting regression, security, and E2E verification | Verify integration across repositories/services, human-only decision enforcement, revision-aware gates, migration safety, security, and full lifecycle behavior. Feature-level tests remain part of Tasks 2–8. | Wave 3; throughout where appropriate |
+| 10. Pilot deployment and workflow validation | Deploy to test, run a real AI-team task through the full lifecycle, record evidence, collect feedback, and resolve pilot gaps. | Wave 3, after implementation and QA |
 
 The coordinator should split these groups into appropriately sized cards. Avoid one oversized card per entire group if the work can be independently implemented and reviewed. Each card must link to this requirements document and identify the applicable FR/AC references. Developer and QA assignments must be different.
 
@@ -343,16 +387,26 @@ The coordinator should split these groups into appropriately sized cards. Avoid 
 | Schema/API changes disrupt current clients | Existing boards or MCP integrations break | Additive migrations, compatibility tests, staged deployments |
 | Scope becomes too large for a pilot | Delayed delivery and unclear value | Deliver manual workflow tracking first; defer full synchronization and automation |
 
-## 16. Open questions and decisions
+## 16. Decisions and remaining design work
 
-| Question / decision | Owner | Status | Resolution |
-|---|---|---|---|
-| Should the software-development workflow profile be enabled per board or offered as a board template? | Team Lead / Architecture | Open | Recommend per-board profile initially; decide during task 1 design. |
-| What participant catalog UX is simplest for named AI agents and human contributors who are not Kanban members? | Architecture / UX | Open | Must not grant access or require a login; finalize in data-model design. |
-| Should task-level acceptance criteria be a dedicated checklist entity or structured card field? | Architecture | Open | Choose based on API, audit, and import/export needs. |
-| Which GitHub facts can be verified automatically with currently available integration permissions? | Team Lead / Coordinator | Open | MVP records links/revisions manually; verify integration feasibility separately. |
-| What is the minimum set of checkpoint types required for the first pilot? | Team Lead / Coordinator | Open | Use the stages in section 4.2 as the proposed baseline; simplify only with approval. |
-| Should activity history support edits/deletions for non-critical events? | Architecture / Security | Open | Important workflow events must be append-oriented and auditable. |
+The following product/workflow decisions are agreed for this requirements baseline. The remaining Wave 0 items are technical design choices, not permission to change the agreed behavior.
+
+| Decision | Agreed resolution | Follow-up |
+|---|---|---|
+| Workflow profile scope | Enable the software-development workflow profile per board; ordinary boards remain lightweight by default. | Task 1 defines the profile configuration and defaults. |
+| Human-only approval channel | Team Lead authorization to merge into `develop`, test ACCEPTED/REJECTED, and production-promotion authorization are web-application-only actions by the authenticated Team Lead. MCP may read these decisions but may not create, edit, or reverse them. Backend enforcement is mandatory. | Task 1 defines trusted client/actor enforcement; backend tasks implement and test it. |
+| QA after a rebase | Full re-QA is the default whenever the PR head SHA changes. A delta-check is allowed only for a mechanical, conflict-free rebase with demonstrably unchanged effective patch, no implementation/contract changes, and relevant CI checks passing. Independent QA must document old/new SHAs, patch comparison, checks rerun, and issue fresh QA evidence for the new SHA. Any semantic, contract, hot-file, or uncertain change requires full QA. | Task 1 defines the evidence representation; backend validation and QA procedures enforce revision binding. |
+| Revision identity | The PR head commit SHA is the authoritative revision identifier for QA and senior review. Deployment and human acceptance evidence must also identify the exact deployed/tested revision. Changed revisions do not inherit prior approval automatically. | Task 1 defines evidence references and invalidation behavior. |
+| Phase 1 scope | Keep FR-31 card summaries and FR-32 workflow filters out of the Phase 1 pilot; defer them to Phase 2. Keep FR-34 in Phase 1 so all newly supported workflow data and relationships survive import/export. | Coordinator labels/schedules Phase 2 work separately; Task 8 covers Phase 1 data preservation. |
+| Release sequencing | Backend persistence, validation, and API contract must be integrated before dependent frontend/MCP work. Parallel work is permitted only with explicit file ownership and no conflicting writers; shared files/contracts are integrated sequentially. Cross-cutting E2E/security verification follows core integration. | Task 1 produces the dependency graph, file-ownership map, and migration allocation plan. |
+| Task-level tests | Every implementation card includes its own tests and acceptance criteria. Task 9 is reserved for cross-cutting security, integration, regression, and E2E verification rather than tests omitted by earlier tasks. | Claude.ai applies this when decomposing the task groups into cards. |
+| Task acceptance-criteria representation | The product requirement is settled: criteria are structured, checkable, traceable, and revision/evidence-aware. Whether to store each criterion as a dedicated entity or as a structured field remains an implementation design choice. | Resolve in Task 1 before migrations are allocated. |
+| Participant catalog | Active DevN instances use distinct authenticated Kanban user identities for audit attribution. The catalog may also represent appropriate external/non-login contributors. Assignment never grants board access or authority. | Resolve the participant data model and UX in Task 1; align with the team's DevN identity standard. |
+| Checkpoint types | The required workflow stages are QA, senior review, Team Lead merge authorization, test deployment/verification, Team Lead acceptance/rejection, and production authorization/release verification. The exact extensible type taxonomy and stored representation are technical design choices. | Resolve in Task 1 before API/MCP contracts are frozen. |
+| GitHub fact verification | Phase 1 may record repository/branch/PR/commit and deployment details manually, but must label manual assertions distinctly from verified facts. | Task 1 confirms current integration permissions; automatic verification remains a later enhancement. |
+| Activity history | Important workflow and approval events are append-oriented and auditable. Corrections are represented by subsequent events or an audited correction mechanism, not silent edits/deletions. | Task 1 defines event model and permitted correction behavior. |
+
+Task 1 must inspect the actual `kanban`, backend, and MCP repositories before finalizing the technical design. The repository/service split, touched-file ownership, migration versions, API contracts, and MCP signatures must be confirmed from source rather than assumed from this requirements document.
 
 ## 17. Approval
 
