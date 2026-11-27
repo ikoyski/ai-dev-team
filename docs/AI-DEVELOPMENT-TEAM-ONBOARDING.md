@@ -113,7 +113,6 @@ This is the current arrangement, not a permanent product-specific assignment:
 
 | Participant | Current role | Current access constraint |
 |---|---|---|
-| Human Team Lead | Product direction, prioritization, final approval | Human-controlled |
 | Human Team Lead | Product direction, prioritization, final approval | Separate human Kanban identity; retains human-only approval authority |
 | ChatGPT | Chief Architect / Senior Technical Reviewer; may own architecture tasks | Distinct reviewer/architect attribution; never borrow another participant's identity |
 | Claude.ai | Project Coordinator | Coordinator identity; coordinates cards, handoffs, and assignments |
