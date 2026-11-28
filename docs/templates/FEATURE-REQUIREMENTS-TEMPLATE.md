@@ -82,11 +82,11 @@ Describe environment impact, configuration changes, data migrations, deployment 
 
 ## 14. Suggested task breakdown
 
-Claude.ai uses this section to review and create Kanban cards after the plan is approved. The final assignments must name one developer and a different QA reviewer per card.
+Claude.ai uses this section to review and create Kanban cards after the plan is approved. The final assignments must name one primary developer instance and a different independent QA instance. Use the stable DevN IDs (Dev1, Dev2, … DevN); tool/harness names are supplemental attributes, not identities. See [Developer Instance Identity and Access](../../docs/DEVELOPER-INSTANCE-IDENTITY-AND-ACCESS.md).
 
-| Task | Description / acceptance criteria | Developer | QA reviewer | Dependencies |
+| Task | Description / acceptance criteria | Developer (DevN) | QA reviewer (different DevN) | Dependencies |
 |---|---|---|---|---|
-| 1 | ... | Antigravity / Claude Code | Opposite agent | ... |
+| 1 | ... | DevN (<tool/harness>) | DevM (<tool/harness>, M ≠ N) | ... |
 
 Every card links back to this requirements document. Use the standard workflow states from the onboarding document; do not create extra columns just for individual handoff steps.
 

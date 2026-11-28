@@ -9,7 +9,7 @@ description: Turn approved plans into actionable tracked work, maintain task own
 
 Coordinate approved project work from task preparation through implementation, review, acceptance, and completion. Keep the work tracker accurate and make handoffs clear without changing approved requirements or exercising authority reserved for the Team Lead.
 
-This skill describes a reusable coordination procedure. Follow the project's own tracker conventions and the shared [AI Development Team Onboarding Standard](../../docs/AI-DEVELOPMENT-TEAM-ONBOARDING.md) and [Workflow and Branching Guide](../../docs/AI-DEVELOPMENT-WORKFLOW-AND-BRANCHING.md) when the project has adopted them.
+This skill describes a reusable coordination procedure. Follow the project's own tracker conventions and the shared [AI Development Team Onboarding Standard](../../docs/AI-DEVELOPMENT-TEAM-ONBOARDING.md), [Workflow and Branching Guide](../../docs/AI-DEVELOPMENT-WORKFLOW-AND-BRANCHING.md), and [Developer Instance Identity and Access](../../docs/DEVELOPER-INSTANCE-IDENTITY-AND-ACCESS.md) when the project has adopted them.
 
 ## When to use
 
@@ -31,6 +31,8 @@ Do not use to define or approve product requirements, make unapproved architectu
 - Verify actual tracker access and the available operations before promising or attempting changes.
 - Confirm the Team Lead's priorities, approval status, and any constraints on assignment or scheduling.
 - Identify participants' current capabilities and permissions; do not infer access from their product name or access in another environment.
+- For AI developers, consult the access-controlled developer roster and identify each contributor by its stable DevN ID (Dev1, Dev2, … DevN), not only by tool or model.
+- Verify that each DevN has a distinct Kanban user identity and its own OAuth token/session context. The MCP OAuth client ID may be shared by instances of the same application type; user accounts and tokens must not be shared.
 
 If the plan is not approved, materially ambiguous, or missing acceptance criteria, keep the work in the appropriate proposed/blocked state and request clarification or approval. Do not create implementation-ready tasks from an unapproved proposal.
 
@@ -60,7 +62,7 @@ If the plan is not approved, materially ambiguous, or missing acceptance criteri
    - Testing requirements and expected evidence.
    - Dependencies and sequencing.
    - Relevant project repository, expected branch/PR conventions, and deliverables.
-   - One primary developer and a different independent QA reviewer.
+   - One primary developer identified by DevN and a different independent QA reviewer identified by another DevN.
    - Required technical authority and human approver, where applicable.
    - Priority and target date only when confirmed by the Team Lead or project policy.
 
@@ -74,8 +76,10 @@ If the plan is not approved, materially ambiguous, or missing acceptance criteri
    - If a required label or field is missing, report the gap and ask the authorized project owner how to handle it.
 
 5. **Assign ownership and verify readiness.**
-   - Name one primary developer and a different independent QA reviewer.
+   - Name one primary DevN developer and a different DevN as independent QA reviewer; record each instance's tool/harness as supplemental information.
+   - Verify that the developer and reviewer are different instances with separate Kanban user identities, workspaces, and credential stores. Different tool names alone do not prove identity separation.
    - Check that each participant has the repository, tracker, environment, and tool access required for the assigned responsibility.
+   - Use `dev:devN` and `qa:devN` labels or native owner/reviewer fields; tool-family labels are supplemental only.
    - Avoid assigning a participant to a role that conflicts with their work on the same change.
    - Confirm dependencies are resolved or explicitly represented.
    - Move work to Ready only when it is approved, sufficiently specified, and has clear ownership and acceptance criteria under the project's workflow.
@@ -107,30 +111,32 @@ If the plan is not approved, materially ambiguous, or missing acceptance criteri
    Status: Ready for implementation
    Approved plan: <link and revision>
    Scope / acceptance criteria: <references>
-   Developer: <participant>
-   Independent QA: <different participant>
+   Developer: <DevN> (<tool/harness>)
+   Independent QA: <different DevN> (<tool/harness>)
    Dependencies: <items or none>
    Next: Developer to review the task and confirm acceptance.
    ```
 
    **Developer handoff**
    ```text
-   [Developer | role or participant]
+   [Developer | DevN | tool/harness]
    Status: Implementation complete
    Branch: <branch>
    PR/change: <link>
    Commit: <sha>
+   GitHub actor: <GitHub user or App identity>
    Summary: <brief summary>
    Tests run and results: <actual results>
    Known limitations: <items or none>
-   Next: Independent QA by <reviewer>.
+   Next: Independent QA by <different DevN>.
    ```
 
    **QA handoff**
    ```text
-   [QA | participant]
+   [QA | DevN | tool/harness]
    Result: PASS / FAIL / NEEDS CLARIFICATION
    Reviewed PR/commit: <exact revision>
+   Developer reviewed: <DevN>
    Checks and results: <actual checks>
    Findings: <severity, location, evidence, or none>
    Limitations: <unverified areas>
@@ -179,7 +185,7 @@ Before reporting coordination complete, confirm:
 - The source plan is approved and its exact revision is recorded.
 - Each task maps to approved scope and acceptance criteria.
 - Tasks are neither duplicated nor missing required dependencies.
-- Each Ready task has one developer and a different QA reviewer.
+- Each Ready task has one identified DevN developer and a different DevN QA reviewer with separate identity/session contexts.
 - Labels and metadata follow existing project conventions.
 - Tracker writes were confirmed and the resulting records are accessible.
 - State changes satisfy the project's transition rules and approval gates.
@@ -191,7 +197,7 @@ Before reporting coordination complete, confirm:
 
 - Never approve requirements, change approved scope, or make architecture decisions on behalf of the Team Lead or architect.
 - Never fabricate card creation, comments, assignments, labels, state changes, test results, deployments, approvals, or completion.
-- Never assign a developer as the independent QA reviewer of their own change.
+- Never assign a DevN as the independent QA reviewer of its own change; verify instance IDs, not merely tool names.
 - Never move work past a required QA, senior review, human acceptance, merge, or release gate.
 - Never treat a reviewer's PASS, a card state, or a general instruction as authorization for a specific merge or production release.
 - Do not put secrets, credentials, private keys, or sensitive personal data in tracker records.

@@ -11,11 +11,12 @@ This guide translates the organization-wide standard into a practical workflow f
 1. The Human Team Lead owns priorities, approves requirements and consequential decisions, performs final test acceptance, and authorizes production promotion.
 2. ChatGPT is the primary requirements and technical-plan author, and can later perform senior code review and approved GitHub operations.
 3. Claude.ai is the primary work coordinator and Kanban operator when it has Kanban MCP access.
-4. Antigravity and Claude Code using OpenRouter are the default implementation and independent QA participants.
+4. Registered DevN instances are the implementation and independent QA pool; assign by capability, capacity, access, and independence rather than by tool name alone.
 5. The same agent must not implement and independently QA the same change.
 6. A participant performs only actions supported by its actual access. If it cannot access a system, it prepares a clear handoff to someone who can.
 7. The standard workflow states remain those in the onboarding document. This guide does not require extra columns for each kind of review or deployment.
 8. GitHub PRs and commits are the evidence of code changes. Kanban cards coordinate work. Approved requirement documents define intended behavior.
+9. Every independently operating developer runtime has a stable DevN identity (Dev1, Dev2, … DevN), regardless of tool, model, or provider.
 
 OpenRouter is the model/provider routing layer; Claude Code is the coding harness. Identify the coding environment as Claude Code in task reports and optionally record the selected OpenRouter model.
 
@@ -26,8 +27,8 @@ OpenRouter is the model/provider routing layer; Claude Code is the coding harnes
 | Human Team Lead | Product Owner and final authority | Discusses needs, approves plans, prioritizes work, reviews Kanban status, tests the test environment, authorizes production promotion |
 | ChatGPT.com | Chief Architect / Requirements Author / Senior Code Reviewer | Creates and updates requirement plans in this repository, inspects project code, prepares technical plans, reviews PRs, performs explicitly authorized GitHub merge operations |
 | Claude.ai | Project Coordinator (may support architecture discussions when assigned) | Reads approved plans, creates/updates Kanban cards, records handoffs, moves cards, coordinates work, initiates or coordinates test deployment if authorized access exists |
-| Claude Code (Dev1) | Developer 1 / QA 2 | Implements assigned tasks or independently reviews Antigravity changes |
-| Antigravity (Dev2) | QA 1 / Developer 2 | Independently reviews Claude Code changes or implements assigned tasks |
+| Claude Code (Dev1) | Developer / independent QA reviewer | Implements assigned tasks or independently reviews Antigravity changes; OpenRouter is an optional model/provider route |
+| Antigravity (Dev2) | Developer / independent QA reviewer | Implements assigned tasks or independently reviews Claude Code changes |
 
 ### Capability-based handoff
 
@@ -153,18 +154,18 @@ Use comments to make the current substage explicit while the card remains in In 
 
 ## 5. Developer workflow
 
-Default developer/QA pairing:
+Initial developer/QA pairing:
 
 | Developer | Independent QA |
 |---|---|
-| Claude Code (Dev1) | Antigravity (QA 2) |
-| Antigravity (Dev2) | Claude Code (QA 1) |
+| Claude Code (Dev1) | Antigravity (Dev2) |
+| Antigravity (Dev2) | Claude Code (Dev1) |
 
 The coordinator may assign either developer based on capacity and access. Pairing can change only if a different independent reviewer is named before QA.
 
 When a developer takes a task from Ready:
 
-1. Confirm the card is assigned to that developer.
+1. Confirm the card identifies this DevN instance as the primary developer, using a native owner field or the project's agreed `dev:devN` label/structured description.
 2. Read the full card and linked approved requirements.
 3. Read project instructions and relevant architecture documentation.
 4. Check dependencies, repository access, and current `develop` baseline.
@@ -184,7 +185,7 @@ If the developer cannot update Kanban, the implementation is not blocked solely 
 
 The assigned QA reviewer takes the card from In Review after the implementation handoff is available.
 
-1. Confirm the developer and QA identities are different.
+1. Confirm the developer and QA DevN IDs are different and that you are using your own workspace, Kanban user, and credentials.
 2. Read the approved requirement plan, card, acceptance criteria, and developer report.
 3. Inspect the actual PR, branch, and commit diff. Do not rely solely on the developer's summary.
 4. Run tests or reproduce behavior where practical and permitted.
@@ -311,9 +312,12 @@ Next: Independent QA by Antigravity.
 
 **QA report — Dev2 (Antigravity reviewing Dev1)**
 ```text
-[Antigravity | QA 2]
+[Antigravity | Dev2]
 Result: PASS / FAIL / NEEDS CLARIFICATION
+Developer: Dev1
+QA reviewer: Dev2
 Reviewed PR/commit: ...
+GitHub actor: <GitHub user or App identity, if relevant>
 Checks run: ...
 Findings:
 - [High] <file:line> — evidence, reproduction, expected result
@@ -353,6 +357,8 @@ Findings: ...
 Production promotion authorized: YES / NO
 ```
 
+Replace the example Dev1/Dev2 identities above with the actual owner and reviewer for each task. Never use a tool name alone when multiple instances exist.
+
 Never put secrets, credentials, private keys, or sensitive personal data in cards or comments. Preserve existing labels if an API replaces the complete label list.
 
 ## 11. Definition of successful handoff
@@ -370,7 +376,9 @@ The coordinator keeps the card current when it has access. When it does not, the
 
 ## 12. Safeguards
 
-- One primary developer and a different QA reviewer per task.
+- One primary DevN developer and a different DevN QA reviewer per task; record both identifiers.
+- Every DevN uses isolated credentials, OAuth token storage, browser profile, and workspace. Shared OAuth client IDs do not permit shared user sessions.
+- Record the actual GitHub user/App actor and the initiating DevN for source-control actions.
 - QA checks the actual source diff and exact commit.
 - QA does not directly edit the developer's branch by default.
 - Review PASS, human test acceptance, and production authorization are separate decisions.
